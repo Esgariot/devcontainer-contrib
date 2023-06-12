@@ -1,4 +1,6 @@
-#!/usr/bin/env -S bash -i
+#!/usr/bin/env sh
+
+msg() { >&2 echo "$1"; }
 
 clean_download() {
     # The purpose of this function is to download a file with minimal impact on contaier layer size
@@ -15,7 +17,7 @@ clean_download() {
     tempdir=$(mktemp -d)
     downloader_installed=""
 
-    function _apt_get_install() {
+    _apt_get_install() {
         tempdir=$1
 
         # copy current state of apt list - in order to revert back later (minimize contianer layer size) 
@@ -24,18 +26,18 @@ clean_download() {
         apt-get -y install --no-install-recommends wget ca-certificates
     }
 
-    function _apt_get_cleanup() {
+    _apt_get_cleanup() {
         tempdir=$1
 
-        echo "removing wget"
+        msg "removing wget"
         apt-get -y purge wget --auto-remove
 
-        echo "revert back apt lists"
+        msg "revert back apt lists"
         rm -rf /var/lib/apt/lists/*
         rm -r /var/lib/apt/lists && mv "${tempdir}/lists" /var/lib/apt/lists
     }
 
-    function _apk_install() {
+    _apk_install() {
         tempdir=$1
         # copy current state of apk cache - in order to revert back later (minimize contianer layer size) 
         cp -p -R /var/cache/apk "${tempdir}" 
@@ -43,12 +45,13 @@ clean_download() {
         apk add --no-cache  wget
     }
 
-    function _apk_cleanup() {
+    _apk_cleanup() {
         tempdir=$1
 
-        echo "removing wget"
+        msg "removing wget"
         apk del wget 
     }
+
     # try to use either wget or curl if one of them already installer
     if type curl >/dev/null 2>&1; then
         downloader=curl
@@ -65,7 +68,7 @@ clean_download() {
         elif [ -x "/sbin/apk" ] ; then
             _apk_install "${tempdir}"
         else
-            echo "distro not supported"
+            msg "distro not supported"
             exit 1
         fi
         downloader="wget"
@@ -86,7 +89,7 @@ clean_download() {
         elif [ -x "/sbin/apk" ] ; then
             _apk_cleanup "${tempdir}"
         else
-            echo "distro not supported"
+            msg "distro not supported"
             exit 1
         fi
     fi 
@@ -96,57 +99,50 @@ clean_download() {
 
 ensure_nanolayer() {
     # Ensure existance of the nanolayer cli program
-    local variable_name=$1
-
-    local required_version=$2
+    variable_name=$1
+    _required_version=$2
+    
     # normalize version
-    if ! [[ $required_version == v* ]]; then
-        required_version=v$required_version
-    fi
+    case "${_required_version}" in
+        v*) ;;
+        *) _required_version=v$_required_version ;;
+    esac
 
-    local nanolayer_location=""
+    _nanolayer_location=""
 
     # If possible - try to use an already installed nanolayer
-    if [[ -z "${NANOLAYER_FORCE_CLI_INSTALLATION}" ]]; then
-        if [[ -z "${NANOLAYER_CLI_LOCATION}" ]]; then
+    if [ -z "${NANOLAYER_FORCE_CLI_INSTALLATION:-}" ]; then
+        if [ -z "${NANOLAYER_CLI_LOCATION:-}" ]; then
             if type nanolayer >/dev/null 2>&1; then
-                echo "Found a pre-existing nanolayer in PATH"
-                nanolayer_location=nanolayer
+                msg "Found a pre-existing nanolayer in PATH"
+                _nanolayer_location=nanolayer
             fi
         elif [ -f "${NANOLAYER_CLI_LOCATION}" ] && [ -x "${NANOLAYER_CLI_LOCATION}" ] ; then
-            nanolayer_location=${NANOLAYER_CLI_LOCATION}
-            echo "Found a pre-existing nanolayer which were given in env varialbe: $nanolayer_location"
+            _nanolayer_location=${NANOLAYER_CLI_LOCATION}
+            msg "Found a pre-existing nanolayer which were given in env varialbe: $_nanolayer_location"
         fi
 
         # make sure its of the required version
-        if [[ -n "${nanolayer_location}" ]]; then
-            local current_version
-            current_version=$($nanolayer_location --version)
-            if ! [[ $current_version == v* ]]; then
-                current_version=v$current_version
-            fi
+        if [ -n "${_nanolayer_location}" ]; then
+            __current_version=$($_nanolayer_location --version)
+            case "${__current_version}" in 
+                v*) ;;
+                *) __current_version=v$__current_version ;;
+            esac
 
-            if ! [ "$current_version" == "$required_version" ]; then
-                echo "skipping usage of pre-existing nanolayer. (required version $required_version does not match existing version $current_version)"
-                nanolayer_location=""
+            if ! [ "$__current_version" = "$_required_version" ]; then
+                msg "skipping usage of pre-existing nanolayer. (required version $_required_version does not match existing version $__current_version)"
+                _nanolayer_location=""
             fi
         fi
 
     fi
 
     # If not previous installation found, download it temporarly and delete at the end of the script 
-    if [[ -z "${nanolayer_location}" ]]; then
+    if [ -z "${_nanolayer_location}" ]; then
 
-        if [ "$(uname -sm)" == "Linux x86_64" ] || [ "$(uname -sm)" == "Linux aarch64" ]; then
+        if [ "$(uname -sm)" = "Linux x86_64" ] || [ "$(uname -sm)" == "Linux aarch64" ]; then
             tmp_dir=$(mktemp -d -t nanolayer-XXXXXXXXXX)
-
-            clean_up () {
-                ARG=$?
-                rm -rf "$tmp_dir"
-                exit "$ARG"
-            }
-            trap clean_up EXIT
-
             
             if [ -x "/sbin/apk" ] ; then
                 clib_type=musl
@@ -157,21 +153,20 @@ ensure_nanolayer() {
             tar_filename=nanolayer-"$(uname -m)"-unknown-linux-$clib_type.tgz
 
             # clean download will minimize leftover in case a downloaderlike wget or curl need to be installed
-            clean_download "https://github.com/devcontainers-contrib/cli/releases/download/${required_version}/${tar_filename}" "${tmp_dir}/${tar_filename}"
+            clean_download "https://github.com/devcontainers-contrib/cli/releases/download/${_required_version}/${tar_filename}" "${tmp_dir}/${tar_filename}"
             
             tar xfzv "${tmp_dir}/${tar_filename}" -C "${tmp_dir}"
             chmod a+x "${tmp_dir}/nanolayer"
-            nanolayer_location="${tmp_dir}/nanolayer"
+            _nanolayer_location="${tmp_dir}/nanolayer"
       
 
         else
-            echo "No binaries compiled for non-x86-linux architectures yet: $(uname -m)"
+            msg "No binaries compiled for non-x86-linux architectures yet: $(uname -m)"
             exit 1
         fi
     fi
 
     # Expose outside the resolved location
-    declare -g "${variable_name}"="$nanolayer_location"
-
+    eval "${variable_name}=\${_nanolayer_location}"
 }
 
