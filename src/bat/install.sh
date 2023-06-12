@@ -1,8 +1,13 @@
-#!/usr/bin/env sh
-set -eu
+#!/usr/bin/env -S bash -i
 
-ASSET="$(gh release view --repo sharkdp/bat --json assets | jq --raw-output '.assets | .[] | .name | select(.|test("bat_[^_]+_amd64\\.deb"))')"
+set -euo pipefail
+. ./library_scripts.sh
+ensure_nanolayer nanolayer_location "v0.4.45"
 
-gh release download --pattern "${ASSET}" --repo 'sharkdp/bat'
+$nanolayer_location \
+    install \
+    devcontainer-feature \
+    "ghcr.io/devcontainers-contrib/features/gh-release:1.0.18" \
+    --option repo='sharkdp/bat' --option binaryNames='bat' --option version="$VERSION"
 
-dpkg -i "${ASSET}"
+echo 'Done!'
