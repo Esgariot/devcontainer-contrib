@@ -10,6 +10,9 @@ $nanolayer_location \
     install \
     devcontainer-feature \
     "ghcr.io/devcontainers-contrib/features/gh-release:1.0.18" \
-    --option repo='helix-editor/helix' --option binaryNames='helix' --option version="$VERSION"
+    --option repo='helix-editor/helix' --option binaryNames='hx' --option version="$VERSION"
+
+pwd
+ls -la
 
 echo 'Done!'
