@@ -1,19 +1,17 @@
 {
-	"name": "helix",
-	"id": "helix",
-	"version": "1.0.1",
-	"description": "helix (via Github Releases)",
-	"options": {
-		"version": {
-			"default": "latest",
-			"description": "Select the version to install.",
-			"proposals": [
-				"latest"
-			],
-			"type": "string"
-		}
-	},
-	"installsAfter": [
-		"ghcr.io/devcontainers-contrib/features/gh-release"
-	]
+    "name": "Helix",
+    "id": "helix",
+    "version": "1.0.2",
+    "description": "A feature to install Helix",
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": ["latest"],
+            "default": "latest"
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/rust",
+        "ghcr.io/devcontainers/features/git"
+    ]
 }
