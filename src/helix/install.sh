@@ -1,51 +1,85 @@
 #!/usr/bin/env -S bash -i
 
-set -euo pipefail
+set -Eeuo pipefail
+ 
+(return 0 2>/dev/null) || {
+
+  install_sh() {
+    while :; do
+      case "${1-}" in
+        --pkgver) _pkgver; exit;;
+        -?*) echo "Unknown option: $1"; exit 1 ;;
+        *) break ;;
+      esac
+      shift
+    done
+  }
+
+  _pkgver() {
+    . ./devcontainer-feature.sh
+    sed -i '0,/^\s*pkgver=/s/^\(s*\)pkgver=.*/\1pkgver="'"$(pkgver)"'"/' ./devcontainer-feature.sh
+  }
+
+  
+  install_sh "$@"
+}
 . ./library_scripts.sh
-ensure_nanolayer na "v0.4.45"
-set -x
 
-ensure_pkg() { dpkg-query -f='${Status:Want}' -W "${1}" || $na install apt-get "${1}"; }
+. ./devcontainer-feature.sh
 
-parse_version() {
-    case "${1}" in
-        "latest") : "$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/helix-editor/helix/releases/latest" | awk -F'/' '{print $NF}')" ;;
-        *)        : "${VERSION}" ;;
-    esac
-    printf "$_"
+ensure_nanolayer __install_nanolayer_cmd "${nlver:-"v0.4.45"}"
+
+srcdir="${HOME}/devcontainer_feature/${pkgname}"
+pkgdir="${HOME}/.devcontainer_feature/tree/${pkgname}"
+mkdir -p "${srcdir}" && cd "${srcdir}"
+mkdir -p "${pkgdir}"
+
+__install_cleanup() {
+  rm -rf "~/devcontainer_feature"
 }
 
-command -v rustup 2>/dev/null || {
-    $na install devcontainer-feature "ghcr.io/devcontainers/features/rust:1"
-    source "/usr/local/cargo/env"
+trap '__install_cleanup' EXIT
+
+nl() { "${__install_nanolayer_cmd}" "$@"; }
+
+__install_ensure_pkg() { dpkg-query -f='${Status:Want}' -W "${1}" || nl install apt-get "${1}"; }
+
+__step_install_depends(){
+  for d in "${depends[@]}"; do
+    __install_ensure_pkg "${d}"
+  done 
 }
 
-# Use git from PPA, because the one in packages is so old it can't interact with sr.ht
-# Required by custom build step for helix
-command -v git 2>/dev/null || {
-    $na install devcontainer-feature "ghcr.io/devcontainers/features/git:1" --option 'version=latest'
+__step_install_prepare() {
+  cd "${srcdir}"
+  prepare  
 }
 
-ensure_pkg build-essential
-ensure_pkg pkg-config
-ensure_pkg curl
 
-# adapted from https://gitlab.archlinux.org/archlinux/packaging/packages/helix
-mkdir -p ~/clone/ && cd ~/clone
-parsed_version="$(parse_version "${VERSION}")"
-curl -Lsf -O "https://github.com/helix-editor/helix/archive/${parsed_version}.tar.gz"
-tar -xzf "${parsed_version}.tar.gz"
-cd "helix-${parsed_version}"
-cargo build --locked --release
+__step_install_build() {
+  cd "${srcdir}"
+  build
+}
 
+__step_install_package() {
+  cd "${srcdir}"
+  package
+}
 
-install -Dm 755 "target/release/hx" "/usr/lib/helix/hx"
-ln -sv /usr/lib/helix/hx /usr/bin/hx
-cp -r runtime /usr/lib/helix/
+__step_install_copy() {
+  (
+    shopt -s dotglob
+    shopt -s globstar
+    export GLOBIGNORE=".:.."
+    cd "${pkgdir}"
+    for i in **/*; do
+      [ ! -d  "${i}" ] && cp -P --parents "${i}" "/"
+    done
+  )
+}
 
-# completions
-install -Dm 644 "contrib/completion/hx.bash" "/usr/share/bash-completion/completions/hx"
-install -Dm 644 "contrib/completion/hx.fish" "/usr/share/fish/vendor_completions.d/hx.fish"
-install -Dm 644 "contrib/completion/hx.zsh" "/usr/share/zsh/site-functions/_hx"
-
-cd && rm -rf ~/clone
+__step_install_depends
+__step_install_prepare
+__step_install_build
+__step_install_package
+__step_install_copy
