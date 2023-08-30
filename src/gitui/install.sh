@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bash -i
 
 set -Eeuo pipefail
- 
+
 (return 0 2>/dev/null) || {
 
   install_sh() {
@@ -20,7 +20,7 @@ set -Eeuo pipefail
     sed -i '0,/^\s*pkgver=/s/^\(s*\)pkgver=.*/\1pkgver="'"$(pkgver)"'"/' ./devcontainer-feature.sh
   }
 
-  
+
   install_sh "$@"
 }
 . ./library_scripts.sh
@@ -47,12 +47,12 @@ __install_ensure_pkg() { dpkg-query -f='${Status:Want}' -W "${1}" || nl install 
 __step_install_depends(){
   for d in "${depends[@]}"; do
     __install_ensure_pkg "${d}"
-  done 
+  done
 }
 
 __step_install_prepare() {
   cd "${srcdir}"
-  prepare  
+  prepare
 }
 
 
