@@ -1,0 +1,16 @@
+{
+    "name": "Git UI",
+    "id": "gitui",
+    "version": "1.0.0",
+    "description": "A feature to install Helix",
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": ["latest"],
+            "default": "latest"
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/rust"
+    ]
+}
