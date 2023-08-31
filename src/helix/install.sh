@@ -2,45 +2,26 @@
 
 set -Eeuo pipefail
 
-(return 0 2>/dev/null) || {
-
-  install_sh() {
-    while :; do
-      case "${1-}" in
-        --pkgver) _pkgver; exit;;
-        -?*) echo "Unknown option: $1"; exit 1 ;;
-        *) break ;;
-      esac
-      shift
-    done
-  }
-
-  _pkgver() {
-    . ./devcontainer-feature.sh
-    sed -i '0,/^\s*pkgver=/s/^\(s*\)pkgver=.*/\1pkgver="'"$(pkgver)"'"/' ./devcontainer-feature.sh
-  }
-
-
-  install_sh "$@"
-}
-. ./library_scripts.sh
-
-. ./devcontainer-feature.sh
-
-ensure_nanolayer __install_nanolayer_cmd "${nlver:-"v0.4.45"}"
-
-srcdir="${HOME}/devcontainer_feature/${pkgname}"
-pkgdir="${HOME}/.devcontainer_feature/tree/${pkgname}"
-mkdir -p "${srcdir}" && cd "${srcdir}"
-mkdir -p "${pkgdir}"
-
-__install_cleanup() {
-  rm -rf "~/devcontainer_feature"
-}
-
-trap '__install_cleanup' EXIT
+script_dir=$(cd "$(dirname "${0}")" &>/dev/null && pwd -P)
 
 nl() { "${__install_nanolayer_cmd}" "$@"; }
+
+__step_install_nanolayer() {
+  . "${script_dir}/library_scripts.sh"
+  ensure_nanolayer __install_nanolayer_cmd "${nlver:-"v0.4.45"}"
+}
+
+__install_cleanup() {
+  rm -rf "/tmp/devcontainer_feature"
+}
+
+__step_install_dirs(){
+  trap '__install_cleanup' EXIT
+  srcdir="/tmp/devcontainer_feature/srcdir/${pkgname}"
+  pkgdir="/tmp/devcontainer_feature/pkgdir/${pkgname}"
+  mkdir -p "${srcdir}" && cd "${srcdir}"
+  mkdir -p "${pkgdir}"
+}
 
 __install_ensure_pkg() { dpkg-query -f='${Status:Want}' -W "${1}" || nl install apt-get "${1}"; }
 
@@ -50,11 +31,13 @@ __step_install_depends(){
   done
 }
 
+__step_install_pkgver() {
+  sed -i '0,/^\s*pkgver=/s/^\(s*\)pkgver=.*/\1pkgver="'"$(pkgver)"'"/' "${script_dir}/devcontainer-feature.sh"
+}
 __step_install_prepare() {
   cd "${srcdir}"
   prepare
 }
-
 
 __step_install_build() {
   cd "${srcdir}"
@@ -78,6 +61,21 @@ __step_install_copy() {
   )
 }
 
+install_sh() {
+  while :; do
+    case "${1-}" in
+      --pkgver) __step_install_pkgver; exit;;
+      -?*) echo "Unknown option: $1"; exit 1 ;;
+      *) break ;;
+    esac
+    shift
+  done
+}
+
+. "${script_dir}/devcontainer-feature.sh"
+install_sh "$@"
+__step_install_nanolayer
+__step_install_dirs
 __step_install_depends
 __step_install_prepare
 __step_install_build
