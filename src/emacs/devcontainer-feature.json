@@ -13,9 +13,9 @@
             "type": "boolean",
             "description": "tree-sitter support. Build emacs with --tree-sitter flag",
             "default": false
-        },
-        "installsAfter": [
-            "ghcr.io/Esgariot/devcontainer-contrib/tree-sitter"
-        ]
-    }
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/Esgariot/devcontainer-contrib/tree-sitter"
+    ]
 }
