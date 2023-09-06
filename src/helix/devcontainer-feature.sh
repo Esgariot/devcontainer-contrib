@@ -9,7 +9,7 @@ pkgver() {
         "latest") : "$(curl -Ls -o /dev/null -w %{url_effective} "${url}/releases/latest" | awk -F'/' '{print $NF}')" ;;
         *)        : "${VERSION}" ;;
     esac
-    printf "$_"
+    echo "$_"
 }
 
 prepare() {
@@ -22,7 +22,7 @@ prepare() {
 
     # Use git from PPA, because the one in packages is so old it can't interact with sr.ht
     # Required by custom build step for helix
-    if command -v git 2>/dev/null && [ $(semver "$(git --version | cut -d' ' -f3)") -ge $(semver "2.40.0") ]; then
+    if command -v git 2>/dev/null && [ "$(semver "$(git --version | cut -d' ' -f3)")" -ge "$(semver "2.40.0")" ]; then
         :
     else
         nl install devcontainer-feature "ghcr.io/devcontainers/features/git:1" --option 'version=latest'
