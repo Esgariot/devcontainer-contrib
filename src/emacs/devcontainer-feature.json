@@ -1,0 +1,21 @@
+{
+    "name": "emacs",
+    "id": "emacs",
+    "version": "0.0.1",
+    "description": "A feature to install emacs",
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": ["latest", "master"],
+            "default": "latest"
+        },
+        "tree-sitter": {
+            "type": "bool",
+            "description": "tree-sitter support. Build emacs with --tree-sitter flag",
+            "default": false
+        },
+        "installsAfter": [
+            "ghcr.io/Esgariot/devcontainer-contrib/tree-sitter"
+        ]
+    }
+}

@@ -1,0 +1,9 @@
+{
+	"without-tree-sitter": {
+		"features": {
+			"emacs": {
+				"tree-sitter": false
+			}
+		}
+	}
+}
