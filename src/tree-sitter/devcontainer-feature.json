@@ -1,0 +1,13 @@
+{
+    "name": "Treesitter",
+    "id": "tree-sitter",
+    "version": "0.0.1",
+    "description": "tree-sitter bindings",
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": ["latest"],
+            "default": "latest"
+        }
+    }
+}
