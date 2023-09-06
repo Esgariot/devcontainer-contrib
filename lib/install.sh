@@ -1,6 +1,7 @@
 #!/usr/bin/env -S bash -i
 
 set -Eeuo pipefail
+export DEBIAN_FRONTEND=noninteractive
 
 script_dir=$(cd "$(dirname "${0}")" &>/dev/null && pwd -P)
 
@@ -26,9 +27,12 @@ __step_install_dirs(){
 __install_ensure_pkg() { dpkg-query -f='${Status:Want}' -W "${1}" || nl install apt-get "${1}"; }
 
 __step_install_depends(){
+  local missing_depends=()
+  join_by() { local IFS="$1"; shift; echo "$*"; }
   for d in "${depends[@]}"; do
-    __install_ensure_pkg "${d}"
+    dpkg-query -f='${Status:Want}' -W "${d}" || missing_depends+=("${d}")
   done
+  nl install apt-get "$(join_by , "${missing_depends[@]}")"
 }
 
 __step_install_pkgver() {
@@ -40,6 +44,7 @@ __step_install_prepare() {
 }
 
 __step_install_build() {
+  ldconfig
   cd "${srcdir}"
   build
 }
