@@ -10,7 +10,7 @@
             "default": "latest"
         },
         "tree-sitter": {
-            "type": "bool",
+            "type": "boolean",
             "description": "tree-sitter support. Build emacs with --tree-sitter flag",
             "default": false
         },
