@@ -1,21 +1,24 @@
 {
-    "name": "emacs",
-    "id": "emacs",
-    "version": "0.0.1",
-    "description": "A feature to install emacs",
-    "options": {
-        "version": {
-            "type": "string",
-            "proposals": ["latest", "master"],
-            "default": "latest"
-        },
-        "tree-sitter": {
-            "type": "boolean",
-            "description": "tree-sitter support. Build emacs with --tree-sitter flag",
-            "default": false
-        }
+  "name": "emacs",
+  "id": "emacs",
+  "version": "0.0.1",
+  "description": "A feature to install emacs",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": ["latest", "master"],
+      "default": "latest"
     },
-    "installsAfter": [
-        "ghcr.io/Esgariot/devcontainer-contrib/tree-sitter"
-    ]
+    "native-comp": {
+      "type": "boolean",
+      "description": "adds support for compiling EmacsLisp to native code using libgccjit",
+      "default": true
+    },
+    "tree-sitter": {
+      "type": "boolean",
+      "description": "tree-sitter support. Build emacs with --tree-sitter flag",
+      "default": false
+    }
+  },
+  "installsAfter": ["ghcr.io/Esgariot/devcontainer-contrib/tree-sitter"]
 }
