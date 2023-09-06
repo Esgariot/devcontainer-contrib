@@ -16,6 +16,7 @@ A feature to install emacs
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | version | - | string | latest |
+| native-comp | adds support for compiling EmacsLisp to native code using libgccjit | boolean | true |
 | tree-sitter | tree-sitter support. Build emacs with --tree-sitter flag | boolean | false |
 
 
