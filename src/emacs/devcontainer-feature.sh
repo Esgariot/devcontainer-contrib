@@ -22,7 +22,7 @@ depends=(
 
 pkgver() {
   case "${VERSION:-"latest"}" in
-    "latest") : "$(curl --list-only -SsfL "${url}" | perl -ne '$max=$1 if /emacs-(.*)\.tar\.gz/ && $1>$max; END {print "$max\n" }')" ;;
+    "latest") : "$(curl --list-only -SsfL "${url}/" | perl -ne '$max=$1 if /emacs-(.*)\.tar\.gz/ && $1>$max; END {print "$max\n" }')" ;;
     *) : "${VERSION}" ;;
   esac
   echo "$_"
