@@ -43,7 +43,7 @@ __step_install_sources() {
 }
 
 __step_install_pkgver() {
-  sed -i /dev/null -e '1 s/^\s*pkgver=.*/pkgver="'"$(pkgver)"'"/; t' -e '1,// s//pkgver="'"$(pkgver)"'"/' "${script_dir}/devcontainer-feature.sh"
+  sed -i "$(mktemp)" -e '1 s/^\s*pkgver=.*/pkgver="'"$(pkgver)"'"/; t' -e '1,// s//pkgver="'"$(pkgver)"'"/' "${script_dir}/devcontainer-feature.sh"
 }
 
 __step_install_prepare() {
@@ -54,6 +54,7 @@ __step_install_prepare() {
 __step_install_build() {
   ldconfig
   cd "${srcdir}"
+  declare -F build > /dev/null || return 0
   build
 }
 
