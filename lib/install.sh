@@ -36,8 +36,9 @@ __step_install_depends(){
 }
 
 __step_install_pkgver() {
-  sed -i '' -e '1 s/^\s*pkgver=.*/pkgver="'"$(pkgver)"'"/; t' -e '1,// s//pkgver="'"$(pkgver)"'"/' "${script_dir}/devcontainer-feature.sh"
-  }
+  sed -i /dev/null -e '1 s/^\s*pkgver=.*/pkgver="'"$(pkgver)"'"/; t' -e '1,// s//pkgver="'"$(pkgver)"'"/' "${script_dir}/devcontainer-feature.sh"
+}
+
 __step_install_prepare() {
   cd "${srcdir}"
   prepare
