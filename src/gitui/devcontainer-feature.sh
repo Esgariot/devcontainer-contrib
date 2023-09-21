@@ -1,5 +1,5 @@
 pkgname="gitui"
-pkgver="0.24.1"
+pkgver="0.24.3"
 url="https://github.com/extrawurst/${pkgname}"
 source="${url}/archive/v${pkgver}.tar.gz"
 depends=(curl pkg-config build-essential)
