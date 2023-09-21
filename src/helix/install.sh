@@ -34,10 +34,18 @@ __step_install_depends(){
   done
   nl install apt-get "$(join_by , "${missing_depends[@]}")"
 }
+__step_install_sources() {
+  [[ $sources ]] && {
+    for s in "${sources[@]}"; do
+      cp "${script_dir}/${s}" "${srcdir}/"  
+    done
+  }
+}
 
 __step_install_pkgver() {
-  sed -i '' -e '1 s/^\s*pkgver=.*/pkgver="'"$(pkgver)"'"/; t' -e '1,// s//pkgver="'"$(pkgver)"'"/' "${script_dir}/devcontainer-feature.sh"
-  }
+  sed -i "$(mktemp)" -e '1 s/^\s*pkgver=.*/pkgver="'"$(pkgver)"'"/; t' -e '1,// s//pkgver="'"$(pkgver)"'"/' "${script_dir}/devcontainer-feature.sh"
+}
+
 __step_install_prepare() {
   cd "${srcdir}"
   prepare
@@ -46,6 +54,7 @@ __step_install_prepare() {
 __step_install_build() {
   ldconfig
   cd "${srcdir}"
+  declare -F build > /dev/null || return 0
   build
 }
 
@@ -81,6 +90,7 @@ install_sh() {
 install_sh "$@"
 __step_install_nanolayer
 __step_install_dirs
+__step_install_sources
 __step_install_depends
 __step_install_prepare
 __step_install_build
