@@ -50,8 +50,7 @@ package() {
     mkdir -p "$runtime_dir/grammars"
     cp -r "runtime/queries" "$runtime_dir"
     cp -r "runtime/themes" "$runtime_dir"
-    find "runtime/grammars" -type f -name '*.so' -exec \
-    install -Dm 755 {} -t "$runtime_dir/grammars" \;
+    find "runtime/grammars" -type f -name '*.so' -exec install -Dm 755 {} -t "$runtime_dir/grammars" \;
     install -Dm 644 runtime/tutor -t "$runtime_dir"
 
     install -Dm 644 "contrib/completion/hx.bash" "$pkgdir/usr/share/bash-completion/completions/hx"
