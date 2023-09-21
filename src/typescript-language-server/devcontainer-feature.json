@@ -1,0 +1,13 @@
+{
+    "name": "typescript language server",
+    "id": "typescript_language_server",
+    "version": "0.0.1",
+    "description": "A feature to install typescript language server",
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": ["latest"],
+            "default": "latest"
+        }
+    }
+}
