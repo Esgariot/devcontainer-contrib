@@ -35,7 +35,7 @@ __step_install_depends(){
   nl install apt-get "$(join_by , "${missing_depends[@]}")"
 }
 __step_install_sources() {
-  [[ $sources ]] && {
+  [[ ${sources:-} ]] && {
     for s in "${sources[@]}"; do
       cp "${script_dir}/${s}" "${srcdir}/"  
     done
