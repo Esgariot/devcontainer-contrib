@@ -1,7 +1,7 @@
 
 .PHONY: sync
 sync: lib/install.sh lib/library_scripts.sh
-	@for d in src/*/; do cp -a $^ $$d; done
+	@for d in src/*/; do cp -a $^ "$$d" >/dev/null 2>&1; done
 
 feature?=*
 .PHONY: update
