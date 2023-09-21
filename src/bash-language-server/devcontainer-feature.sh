@@ -3,7 +3,7 @@ pkgver="5.0.0"
 url="https://registry.npmjs.org/${pkgname}"
 source="${url}/-/${pkgname}-${pkgver}.tgz"
 sources=(wrapper.sh)
-# set -x
+
 _ensure_local_nvm() {
   # ensure nvm
   if command -v nvm >/dev/null 2>&1 || [ -d /usr/local/share/nvm ]; then 
@@ -38,7 +38,6 @@ prepare() {
 build() {
   :
 }
-
 
 package() {
   _ensure_local_nvm
