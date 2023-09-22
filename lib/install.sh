@@ -26,8 +26,6 @@ __step_install_dirs(){
   mkdir -p "${pkgdir}"
 }
 
-__install_ensure_pkg() { dpkg-query -f='${Status:Want}' -W "${1}" || nl install apt-get "${1}"; }
-
 __step_install_depends(){
   [[ "${depends:-}" ]] || depends=()
   depends+=("${global_depends[@]}")
