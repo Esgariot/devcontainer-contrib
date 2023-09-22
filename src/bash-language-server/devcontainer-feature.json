@@ -1,6 +1,6 @@
 {
     "name": "bash language server",
-    "id": "bash_language_server",
+    "id": "bash-language-server",
     "version": "1.0.0",
     "description": "A feature to install bash language server",
     "options": {

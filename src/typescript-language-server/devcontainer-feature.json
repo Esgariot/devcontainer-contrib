@@ -1,6 +1,6 @@
 {
     "name": "typescript language server",
-    "id": "typescript_language_server",
+    "id": "typescript-language-server",
     "version": "0.0.1",
     "description": "A feature to install typescript language server",
     "options": {
