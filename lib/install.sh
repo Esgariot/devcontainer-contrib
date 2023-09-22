@@ -54,13 +54,14 @@ __step_install_pkgver() {
 
 __step_install_prepare() {
   cd "${srcdir}"
+  type prepare &>/dev/null || return 0
   prepare
 }
 
 __step_install_build() {
   ldconfig
   cd "${srcdir}"
-  declare -F build > /dev/null || return 0
+  type build &>/dev/null || return 0
   build
 }
 
