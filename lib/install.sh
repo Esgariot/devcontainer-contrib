@@ -36,12 +36,16 @@ __step_install_depends(){
   done
   nl install apt-get "$(join_by , "${missing_depends[@]}")"
 }
+
 __step_install_sources() {
-  [[ ${sources:-} ]] && {
-    for s in "${sources[@]}"; do
-      cp "${script_dir}/${s}" "${srcdir}/"  
+  if [[ ${source:-} ]]; then
+    for s in "${source[@]}"; do
+      [ -e "${script_dir}/${s}" ] && cp "${script_dir}/${s}" "${srcdir}/" && break
+      local _s="${s##*/}"
+      local __s="${_s%%[?#]*}"
+      curl -fsSL -o "${srcdir}/${__s}" "${s}"
     done
-  }
+  fi
 }
 
 __step_install_pkgver() {
