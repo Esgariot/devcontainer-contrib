@@ -1,8 +1,11 @@
 pkgname="bash-language-server"
 pkgver="5.0.0"
 url="https://registry.npmjs.org/${pkgname}"
-source="${url}/-/${pkgname}-${pkgver}.tgz"
-sources=(wrapper.sh)
+source=(
+  "${url}/-/${pkgname}-${pkgver}.tgz"
+  wrapper.sh
+)
+depends=(shellcheck)
 
 _ensure_local_nvm() {
   # ensure nvm
@@ -32,11 +35,6 @@ pkgver() {
 prepare() {
   _ensure_local_nvm
   nvm install --lts
-  curl -fsSL -o "${pkgname}-${pkgver}.tgz" "${source}"
-}
-
-build() {
-  :
 }
 
 package() {

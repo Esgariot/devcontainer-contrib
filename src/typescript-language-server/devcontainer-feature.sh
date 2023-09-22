@@ -1,8 +1,10 @@
 pkgname="typescript-language-server"
 pkgver="3.3.2"
 url="https://registry.npmjs.org/${pkgname}"
-source="${url}/-/${pkgname}-${pkgver}.tgz"
-sources=(wrapper.sh)
+source=(
+  "${url}/-/${pkgname}-${pkgver}.tgz"
+  wrapper.sh
+)
 
 _ensure_local_nvm() {
   # ensure nvm
@@ -32,13 +34,7 @@ pkgver() {
 prepare() {
   _ensure_local_nvm
   nvm install --lts
-  curl -fsSL -o "${pkgname}-${pkgver}.tgz" "${source}"
 }
-
-build() {
-  :
-}
-
 
 package() {
   _ensure_local_nvm

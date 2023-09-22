@@ -5,6 +5,12 @@ export DEBIAN_FRONTEND=noninteractive
 
 script_dir=$(cd "$(dirname "${0}")" &>/dev/null && pwd -P)
 
+global_depends=(
+  curl
+  build-essential
+  git
+)
+
 nl() { "${__install_nanolayer_cmd}" "$@"; }
 
 __step_install_nanolayer() {
@@ -12,34 +18,37 @@ __step_install_nanolayer() {
   ensure_nanolayer __install_nanolayer_cmd "${nlver:-"v0.4.45"}"
 }
 
-__install_cleanup() {
-  rm -rf "/tmp/devcontainer_feature"
-}
-
 __step_install_dirs(){
-  trap '__install_cleanup' EXIT
   srcdir="/tmp/devcontainer_feature/srcdir/${pkgname}"
   pkgdir="/tmp/devcontainer_feature/pkgdir/${pkgname}"
+  rm -rf "${srcdir}" "${pkgdir}" || :
   mkdir -p "${srcdir}" && cd "${srcdir}"
   mkdir -p "${pkgdir}"
 }
 
-__install_ensure_pkg() { dpkg-query -f='${Status:Want}' -W "${1}" || nl install apt-get "${1}"; }
-
 __step_install_depends(){
+  [[ "${depends:-}" ]] || depends=()
+  depends+=("${global_depends[@]}")
   local missing_depends=()
   join_by() { local IFS="$1"; shift; echo "$*"; }
   for d in "${depends[@]}"; do
-    dpkg-query -f='${Status:Want}' -W "${d}" || missing_depends+=("${d}")
+    local status
+    status="$(dpkg-query -W --showformat='${db:Status-Status}' "$d" 2>&1)" && \
+    [ "${status:-}" = installed ] || \
+    missing_depends+=("${d}")
   done
   nl install apt-get "$(join_by , "${missing_depends[@]}")"
 }
+
 __step_install_sources() {
-  [[ ${sources:-} ]] && {
-    for s in "${sources[@]}"; do
-      cp "${script_dir}/${s}" "${srcdir}/"  
+  if [[ ${source:-} ]]; then
+    for s in "${source[@]}"; do
+      [ -e "${script_dir}/${s}" ] && cp "${script_dir}/${s}" "${srcdir}/" && break
+      local _s="${s##*/}"
+      local __s="${_s%%[?#]*}"
+      curl -fsSL -o "${srcdir}/${__s}" "${s}"
     done
-  }
+  fi
 }
 
 __step_install_pkgver() {
@@ -48,13 +57,14 @@ __step_install_pkgver() {
 
 __step_install_prepare() {
   cd "${srcdir}"
+  type prepare &>/dev/null || return 0
   prepare
 }
 
 __step_install_build() {
   ldconfig
   cd "${srcdir}"
-  declare -F build > /dev/null || return 0
+  type build &>/dev/null || return 0
   build
 }
 
@@ -90,8 +100,8 @@ install_sh() {
 install_sh "$@"
 __step_install_nanolayer
 __step_install_dirs
-__step_install_sources
 __step_install_depends
+__step_install_sources
 __step_install_prepare
 __step_install_build
 __step_install_package

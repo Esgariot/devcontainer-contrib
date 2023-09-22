@@ -1,8 +1,8 @@
 pkgname="helix"
 pkgver="23.05"
 url="https://github.com/helix-editor/${pkgname}"
-source="${url}/archive/${pkgver}.tar.gz"
-depends=(curl pkg-config build-essential)
+source=("${url}/archive/${pkgver}.tar.gz")
+depends=(pkg-config)
 
 pkgver() {
     case "${VERSION:-"latest"}" in
@@ -28,8 +28,7 @@ prepare() {
         nl install devcontainer-feature "ghcr.io/devcontainers/features/git:1" --option 'version=latest'
     fi
 
-    curl -Lsf -o "${pkgname}-${pkgver}.tar.gz" "${source}"
-    tar -xzf "${pkgname}-${pkgver}.tar.gz"
+    tar -xzf "${pkgver}.tar.gz"
 }
 
 

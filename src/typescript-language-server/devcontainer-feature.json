@@ -9,5 +9,8 @@
             "proposals": ["latest"],
             "default": "latest"
         }
-    }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/node"
+    ]
 }
