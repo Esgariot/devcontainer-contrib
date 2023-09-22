@@ -18,14 +18,10 @@ __step_install_nanolayer() {
   ensure_nanolayer __install_nanolayer_cmd "${nlver:-"v0.4.45"}"
 }
 
-__install_cleanup() {
-  rm -rf "/tmp/devcontainer_feature"
-}
-
 __step_install_dirs(){
-  trap '__install_cleanup' EXIT
   srcdir="/tmp/devcontainer_feature/srcdir/${pkgname}"
   pkgdir="/tmp/devcontainer_feature/pkgdir/${pkgname}"
+  rm -rf "${srcdir}" "${pkgdir}" || :
   mkdir -p "${srcdir}" && cd "${srcdir}"
   mkdir -p "${pkgdir}"
 }
