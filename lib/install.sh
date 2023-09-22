@@ -32,7 +32,10 @@ __step_install_depends(){
   local missing_depends=()
   join_by() { local IFS="$1"; shift; echo "$*"; }
   for d in "${depends[@]}"; do
-    dpkg-query -f='${Status:Want}' -W "${d}" || missing_depends+=("${d}")
+    local status
+    status="$(dpkg-query -W --showformat='${db:Status-Status}' "$d" 2>&1)" && \
+    [ "${status:-}" = installed ] || \
+    missing_depends+=("${d}")
   done
   nl install apt-get "$(join_by , "${missing_depends[@]}")"
 }
