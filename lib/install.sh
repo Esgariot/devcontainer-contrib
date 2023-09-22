@@ -5,6 +5,12 @@ export DEBIAN_FRONTEND=noninteractive
 
 script_dir=$(cd "$(dirname "${0}")" &>/dev/null && pwd -P)
 
+global_depends=(
+  curl
+  build-essential
+  git
+)
+
 nl() { "${__install_nanolayer_cmd}" "$@"; }
 
 __step_install_nanolayer() {
@@ -27,6 +33,8 @@ __step_install_dirs(){
 __install_ensure_pkg() { dpkg-query -f='${Status:Want}' -W "${1}" || nl install apt-get "${1}"; }
 
 __step_install_depends(){
+  [[ "${depends:-}" ]] || depends=()
+  depends+=("${global_depends[@]}")
   local missing_depends=()
   join_by() { local IFS="$1"; shift; echo "$*"; }
   for d in "${depends[@]}"; do
