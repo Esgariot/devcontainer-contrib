@@ -1,9 +1,8 @@
 pkgname="emacs"
 pkgver="29.1"
 url="ftp://ftp.gnu.org/gnu/emacs"
-source="${url}/emacs-${pkgver}.tar.gz"
+source=("${url}/${pkgname}-${pkgver}.tar.gz")
 depends=(
-  build-essential
   libgnutls28-dev
   libncurses-dev
   texinfo
@@ -15,9 +14,9 @@ depends=(
   g++-10
   libxml2-dev
   shellcheck
-  curl
   autoconf
   pkg-config
+  zlib1g-dev
 )
 
 pkgver() {
@@ -29,14 +28,13 @@ pkgver() {
 }
 
 prepare() {
-  curl -LsfS -o "${pkgname}-${pkgver}.tar.gz" "${source}"
-
-  if [ "${NATIVE-COMP:-}" == "true" ]; then
-      CONFIGUREFLAGS="--with-native-compilation=aot ${CONFIGUREFLAGS:-}"
+  configure_flags=()
+  if [ "${NATIVE_COMP:-}" == "true" ]; then
+    configure_flags+=("--with-native-compilation=aot")
   fi
 
-  if [ "${TREE-SITTER:-}" == "true" ]; then
-    CONFIGUREFLAGS="--tree-sitter ${CONFIGUREFLAGS:-}"
+  if [ "${TREE_SITTER:-}" == "true" ]; then
+    configure_flags+=("--tree-sitter")
   fi
   tar -xzf "${pkgname}-${pkgver}.tar.gz"
 }
@@ -45,7 +43,7 @@ build() {
   cd "${pkgname}-${pkgver}"
   export CC=/usr/bin/gcc-10 CXX=/usr/bin/gcc-10
   ./autogen.sh
-  ./configure "${CONFIGUREFLAGS:-}" --with-json --with-xml2 --without-x --without-sound \
+  ./configure "${configure_flags[@]}" --with-json --with-xml2 --without-x --without-sound \
     CFLAGS="-O2 -march=native -fomit-frame-pointer"
   make
 }
