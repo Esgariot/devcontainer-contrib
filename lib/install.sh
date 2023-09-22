@@ -97,8 +97,8 @@ install_sh() {
 install_sh "$@"
 __step_install_nanolayer
 __step_install_dirs
-__step_install_sources
 __step_install_depends
+__step_install_sources
 __step_install_prepare
 __step_install_build
 __step_install_package
