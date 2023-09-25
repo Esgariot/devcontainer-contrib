@@ -8,6 +8,11 @@
             "type": "string",
             "proposals": ["latest"],
             "default": "latest"
+        },
+        "typescriptVersion": {
+            "type": "string",
+            "proposals": ["latest", "none"],
+            "default": "latest"
         }
     },
     "installsAfter": [

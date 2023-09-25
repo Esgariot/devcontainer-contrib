@@ -37,7 +37,13 @@ prepare() {
 }
 
 package() {
+  local prefix="${pkgdir}/opt/${pkgname}"
   _ensure_local_nvm
-  npm install -g --prefix "${pkgdir}/opt/${pkgname}" "${srcdir}/${pkgname}-${pkgver}.tgz"
+  case "${TYPESCRIPT_VERSION:-"latest"}" in
+    "latest") npm install -g --prefix "${prefix}" typescript ;;
+    "none") : ;;
+    *) npm install -g --prefix "${prefix}" "typescript@${TYPESCRIPT_VERSION}" ;;
+  esac
+  npm install -g --prefix "${prefix}" "${srcdir}/${pkgname}-${pkgver}.tgz"
   install -Dm 755 "${srcdir}/wrapper.sh" "${pkgdir}/usr/bin/${pkgname}"
 }
