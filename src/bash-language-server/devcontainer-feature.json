@@ -1,7 +1,7 @@
 {
     "name": "bash language server",
     "id": "bash-language-server",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A feature to install bash language server",
     "options": {
         "version": {
