@@ -98,6 +98,7 @@ install_sh() {
 
 . "${script_dir}/devcontainer-feature.sh"
 install_sh "$@"
+[[ ${VERSION:-} == "latest" ]] && __step_install_pkgver
 __step_install_nanolayer
 __step_install_dirs
 __step_install_depends
