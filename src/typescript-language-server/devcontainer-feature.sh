@@ -1,5 +1,5 @@
 pkgname="typescript-language-server"
-pkgver="3.3.2"
+pkgver="4.0.0"
 url="https://registry.npmjs.org/${pkgname}"
 source=(
   "${url}/-/${pkgname}-${pkgver}.tgz"

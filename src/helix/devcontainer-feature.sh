@@ -1,5 +1,5 @@
 pkgname="helix"
-pkgver="23.05"
+pkgver="23.10"
 url="https://github.com/helix-editor/${pkgname}"
 source=("${url}/archive/${pkgver}.tar.gz")
 depends=(pkg-config)
