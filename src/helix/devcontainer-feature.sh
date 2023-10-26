@@ -15,17 +15,20 @@ pkgver() {
 prepare() {
     semver() { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
     # ensure `rustup`
-    command -v rustup 2>/dev/null || {
-        nl install devcontainer-feature "ghcr.io/devcontainers/features/rust:1"
+    if command -v rustup 2>/dev/null; then
         source "/usr/local/cargo/env"
-    }
+    else
+        echo "rustup is required."
+        exit 1
+    fi
 
-    # Use git from PPA, because the one in packages is so old it can't interact with sr.ht
+    # check for newer git, because the one in packages is so old it can't interact with sr.ht
     # Required by custom build step for helix
     if command -v git 2>/dev/null && [ "$(semver "$(git --version | cut -d' ' -f3)")" -ge "$(semver "2.40.0")" ]; then
         :
     else
-        nl install devcontainer-feature "ghcr.io/devcontainers/features/git:1" --option 'version=latest'
+        echo "git >=2.40.0 is required"
+        exit 1
     fi
 
     tar -xzf "${pkgver}.tar.gz"

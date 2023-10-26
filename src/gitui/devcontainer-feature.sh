@@ -9,15 +9,17 @@ pkgver() {
         "latest") : "$(curl -Ls -o /dev/null -w %{url_effective} "${url}/releases/latest" | awk -F'/' '{print substr($NF,2)}')" ;;
         *)        : "${VERSION}" ;;
     esac
-    printf "$_"
+    echo "$_"
 }
 
 prepare() {
     # ensure `rustup`
-    command -v rustup 2>/dev/null || {
-        nl install devcontainer-feature "ghcr.io/devcontainers/features/rust:1"
+    if command -v rustup 2>/dev/null; then
         source "/usr/local/cargo/env"
-    }
+    else
+        echo "rustup is required."
+        exit 1
+    fi
     curl -Lsf -o "${pkgname}-v${pkgver}.tar.gz" "${source}"
     tar -xzf "${pkgname}-v${pkgver}.tar.gz"
 }

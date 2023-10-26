@@ -11,14 +11,8 @@ _ensure_local_nvm() {
   if command -v nvm >/dev/null 2>&1 || [ -d /usr/local/share/nvm ]; then 
     :
   else
-    {
-      ( export UPDATE_RC="false"
-        nl install devcontainer-feature "ghcr.io/devcontainers/features/node" \
-            --option 'version=none' \
-            --option 'nvmVersion=latest' \
-            --option 'nodeGypDependencies=false'
-      )
-    }
+    echo "node.js is required"
+    exit 1
   fi
   source /usr/local/share/nvm/nvm.sh || [[ $? != 1 ]]
 }
