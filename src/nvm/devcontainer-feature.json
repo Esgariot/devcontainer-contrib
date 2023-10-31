@@ -1,0 +1,13 @@
+{
+  "name": "nvm",
+  "id": "nvm",
+  "version": "1.0.0",
+  "description": "A feature to install nvm.sh",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": ["latest"],
+      "default": "latest"
+    }
+  
+}
