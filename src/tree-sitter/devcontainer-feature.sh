@@ -13,7 +13,6 @@ pkgver() {
 }
 
 prepare() {
-  curl -LsfS -o "${pkgname}-v${pkgver}.tar.gz" "${source}"
   tar -xzf "${pkgname}-v${pkgver}.tar.gz"
 }
 
