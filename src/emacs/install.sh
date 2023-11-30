@@ -52,7 +52,12 @@ __step_install_sources() {
 }
 
 __step_install_pkgver() {
-  sed -i "$(mktemp)" -e '1 s/^\s*pkgver=.*/pkgver="'"$(pkgver)"'"/; t' -e '1,// s//pkgver="'"$(pkgver)"'"/' "${script_dir}/devcontainer-feature.sh"
+  local tempsuffix
+  case "$(uname -s)" in
+    Darwin) tempsuffix='' ;;
+    Linux) tempsuffix="$(mktemp)";;
+  esac
+  sed -i "${tempsuffix}" -e '1 s/^\s*pkgver=.*/pkgver="'"$(pkgver)"'"/; t' -e '1,// s//pkgver="'"$(pkgver)"'"/' "${script_dir}/devcontainer-feature.sh"
 }
 
 __step_install_prepare() {
