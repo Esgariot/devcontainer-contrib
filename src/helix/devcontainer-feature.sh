@@ -22,7 +22,7 @@ prepare() {
     fi
 
     tar -xvf "${pkgname}-${pkgver}-source.tar.xz"
-    chown -R "${USER}" .
+    chown -R root .
 }
 
 
