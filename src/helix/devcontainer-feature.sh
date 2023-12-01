@@ -1,8 +1,8 @@
 pkgname="helix"
 pkgver="23.10"
 url="https://github.com/helix-editor/${pkgname}"
-source=("${url}/archive/${pkgver}.tar.gz")
-depends=(pkg-config)
+source=("${url}/releases/download/${pkgver}/${pkgname}-${pkgver}-source.tar.xz")
+depends=(pkg-config xz-utils)
 
 pkgver() {
     case "${VERSION:-"latest"}" in
@@ -13,7 +13,6 @@ pkgver() {
 }
 
 prepare() {
-    semver() { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
     # ensure `rustup`
     if command -v rustup 2>/dev/null; then
         source "/usr/local/cargo/env"
@@ -22,27 +21,17 @@ prepare() {
         exit 1
     fi
 
-    # check for newer git, because the one in packages is so old it can't interact with sr.ht
-    # Required by custom build step for helix
-    if command -v git 2>/dev/null && [ "$(semver "$(git --version | cut -d' ' -f3)")" -ge "$(semver "2.40.0")" ]; then
-        :
-    else
-        echo "git >=2.40.0 is required"
-        exit 1
-    fi
-
-    tar -xzf "${pkgver}.tar.gz"
+    tar -xvf "${pkgname}-${pkgver}-source.tar.xz"
+    chown -R "${USER}" .
 }
 
 
 build() {
-    cd "${pkgname}-${pkgver}"
     cargo build --locked --release
 }
 
 
 package() {
-    cd "${pkgname}-${pkgver}"
     install -Dm 755 "target/release/hx" "$pkgdir/usr/lib/$pkgname/hx"
     install -vdm 755 "$pkgdir/usr/bin"
     ln -sv /usr/lib/$pkgname/hx "$pkgdir/usr/bin/hx"
