@@ -1,0 +1,9 @@
+{
+	"default": {
+		"image": "mcr.microsoft.com/devcontainers/base:focal",
+		"features": {
+			"ghcr.io/devcontainers/features/rust:1": {},
+			"helix":{}
+		}
+	}
+}
