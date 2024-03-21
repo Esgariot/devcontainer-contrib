@@ -2,6 +2,8 @@
 	"default": {
 		"image": "mcr.microsoft.com/devcontainers/base:focal",
 		"features": {
+			"ghcup": {},
+			"cabal": {},
 			"ghc": {
 				"version": "9.6.4"
 			}
