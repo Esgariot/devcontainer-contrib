@@ -1,7 +1,7 @@
 {
   "name": "haskell-language-server",
   "id": "haskell-language-server",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A feature to install HLS",
   "options": {
     "version": {
@@ -12,11 +12,7 @@
   },
   "dependsOn": {
     "ghcr.io/esgariot/devcontainer-contrib/ghcup": {},
-    "ghcr.io/esgariot/devcontainer-contrib/ghc": {},
     "ghcr.io/esgariot/devcontainer-contrib/cabal": {}
   },
-  "installsAfter": [
-    "ghcr.io/esgariot/devcontainer-contrib/ghc"
-  ]
 }
 
