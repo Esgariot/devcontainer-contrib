@@ -1,0 +1,16 @@
+{
+  "name": "Cabal",
+  "id": "cabal",
+  "version": "1.0.0",
+  "description": "A feature to install Cabal via ghcup",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": ["latest"],
+      "default": "latest"
+    }
+  },
+  "dependsOn": {
+    "ghcr.io/esgariot/devcontainer-contrib/ghcup": {}
+  }
+}

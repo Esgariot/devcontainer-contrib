@@ -1,0 +1,10 @@
+{
+	"default": {
+		"image": "mcr.microsoft.com/devcontainers/base:focal",
+		"features": {
+			"ghc": {
+				"version": "9.6.4"
+			}
+		}
+	}
+}

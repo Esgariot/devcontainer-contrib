@@ -1,0 +1,13 @@
+{
+  "name": "GHCup",
+  "id": "ghcup",
+  "version": "1.0.0",
+  "description": "A feature to install ghcup",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": ["latest"],
+      "default": "latest"
+    }
+  
+}
