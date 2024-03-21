@@ -7,3 +7,8 @@ feature?=*
 .PHONY: update
 update: $(wildcard src/$(feature)/install.sh)
 	@for install in $^; do $$install --pkgver; done
+
+test_cmdline?=""
+.PHONY: gen-test
+gen-test:
+	 @scripts/gen_test.sh $(feature) '$(test_cmdline)'
