@@ -15,6 +15,7 @@ pkgver() {
 prepare() {
     # ensure `rustup`
     if command -v rustup 2>/dev/null; then
+        # assumes `rust` devcontainer feature has been installed
         source "/usr/local/cargo/env"
     else
         echo "rustup is required."

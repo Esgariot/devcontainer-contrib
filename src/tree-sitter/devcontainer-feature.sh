@@ -1,5 +1,5 @@
 pkgname="tree-sitter"
-pkgver="0.20.8"
+pkgver="0.22.2"
 url="https://github.com/tree-sitter/${pkgname}"
 source=("${url}/archive/v${pkgver}.tar.gz")
 depends=(build-essential curl)

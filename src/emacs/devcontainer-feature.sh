@@ -1,5 +1,5 @@
 pkgname="emacs"
-pkgver="29.1"
+pkgver="29.2"
 url="ftp://ftp.gnu.org/gnu/emacs"
 source=("${url}/${pkgname}-${pkgver}.tar.gz")
 depends=(

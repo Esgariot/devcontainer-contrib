@@ -1,5 +1,5 @@
 pkgname="bash-language-server"
-pkgver="5.0.0"
+pkgver="5.1.2"
 url="https://registry.npmjs.org/${pkgname}"
 source=(
   "${url}/-/${pkgname}-${pkgver}.tgz"

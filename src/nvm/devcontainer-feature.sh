@@ -1,5 +1,5 @@
 pkgname="nvm"
-pkgver="0.39.5"
+pkgver="0.39.7"
 url="https://github.com/nvm-sh/nvm"
 source=("${url}/archive/v${pkgver}.tar.gz")
 depends=(build-essential curl)
