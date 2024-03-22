@@ -1,15 +1,15 @@
 {
   "name": "GHC",
   "id": "ghc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A feature to install GHC via ghcup",
   "options": {
     "version": {
-      "type": "string",
+      "type": "string"
     },
     "bindist": {
       "description": "url pointing to binary distribution, parsed as `ghcup --url $BINDIST`",
-      "type": "string",
+      "type": "string"
     }
   },
   "dependsOn": {
