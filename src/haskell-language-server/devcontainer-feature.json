@@ -1,18 +1,32 @@
 {
   "name": "haskell-language-server",
   "id": "haskell-language-server",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "A feature to install HLS",
   "options": {
     "version": {
       "type": "string",
       "proposals": ["latest"],
       "default": "latest"
+    },
+    "install": {
+      "type": "string",
+      "proposals": ["package", "source"],
+      "default": "package"
     }
   },
-  "dependsOn": {
-    "ghcr.io/esgariot/devcontainer-contrib/ghcup": {},
-    "ghcr.io/esgariot/devcontainer-contrib/cabal": {}
-  },
+  "mounts": [
+    {
+      "source": "devcontainer-feature-cache-${devcontainerId}",
+      "target": "/tmp/devcontainer_feature/cache",
+      "type": "volume"
+    }
+  ],
+  "onCreateCommand": "/usr/local/share/devcontainer_feature/haskell-language-server/install.sh",
+  "installsAfter": [
+    "ghcr.io/esgariot/devcontainer-contrib/ghcup",
+    "ghcr.io/esgariot/devcontainer-contrib/cabal",
+    "ghcr.io/esgariot/devcontainer-contrib/ghc"
+  ]
 }
 

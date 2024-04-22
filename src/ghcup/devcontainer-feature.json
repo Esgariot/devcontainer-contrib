@@ -1,13 +1,26 @@
 {
   "name": "GHCup",
   "id": "ghcup",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A feature to install ghcup",
   "options": {
     "version": {
       "type": "string",
       "proposals": ["latest"],
       "default": "latest"
+    },
+    "install": {
+      "type": "string",
+      "enum": ["deferred","default"],
+      "default":"default"
     }
-  
+  },
+  "mounts": [
+      {
+        "source": "devcontainer-feature-cache-${devcontainerId}",
+        "target": "/tmp/devcontainer_feature/cache",
+        "type": "volume"
+      }
+  ],
+  "onCreateCommand": "/usr/local/share/devcontainer_feature/ghcup/install.sh"
 }

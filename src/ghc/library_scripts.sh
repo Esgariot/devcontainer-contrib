@@ -169,4 +169,3 @@ ensure_nanolayer() {
     # Expose outside the resolved location
     eval "${variable_name}=\${_nanolayer_location}"
 }
-

@@ -1,8 +1,11 @@
 pkgname="ghcup"
+pkgdesc="GHCup"
 pkgver="0.1.22.0"
+pkgrel="1"
+arch=("amd64")
 url="https://github.com/haskell/${pkgname}-hs"
 source=("https://downloads.haskell.org/~${pkgname}/${pkgver}/x86_64-linux-${pkgname}-${pkgver}")
-depends=(build-essential curl)
+sha256sums=('bf213f4dfd2271b46ca52e2f14e96850ce32e9115e5acc90f1dc5a4e815e32af')
 
 pkgver() {
   case "${VERSION:-"latest"}" in
@@ -15,7 +18,9 @@ pkgver() {
 package() {
   install -Dm755 "x86_64-linux-${pkgname}-${pkgver}" "${pkgdir}/usr/bin/ghcup"
   _install_completion_script zsh "zsh/site-functions/_ghcup"
-}
+  _install_completion_script bash "bash-completion/completions/ghcup"
+  _install_completion_script fish fish/vendor_completions.d/ghcup.fish
+ }
 
 _install_completion_script() {
   install -Dm644 <("${pkgdir}/usr/bin/ghcup" "--${1}-completion-script" "/usr/bin/ghcup") "${pkgdir}/usr/share/${2}"

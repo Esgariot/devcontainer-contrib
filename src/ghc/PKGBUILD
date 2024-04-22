@@ -1,13 +1,16 @@
 pkgname="ghc"
+pkgdesc="Glasgow Haskell Compiler"
 pkgver="${VERSION}"
+pkgrel=1
+arch=(amd64)
 url="https://github.com/haskell/${pkgname}-hs"
-source=()
-depends=(build-essential curl)
+_buildenv=(BINDIST VERSION)
 
 package() {
   local option_bindist=()
   [[ "${BINDIST:-}" ]] && option_bindist+=("--url" "${BINDIST}")
-  ghcup install "${pkgname}" "${option_bindist[@]}" "${pkgver}" --isolate "${pkgdir}/usr"
+  
+  GHCUP_INSTALL_BASE_PREFIX="${srcdir}" ghcup install "${pkgname}" "${option_bindist[@]}" "${pkgver}" --isolate "${pkgdir}/usr"
   find "${pkgdir}" -type f -exec sed -i "s@${pkgdir}@@g" {} \;
 }
 

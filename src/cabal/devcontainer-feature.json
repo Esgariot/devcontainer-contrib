@@ -1,16 +1,29 @@
 {
   "name": "Cabal",
   "id": "cabal",
-  "version": "1.0.0",
-  "description": "A feature to install Cabal via ghcup",
+  "version": "2.0.0",
+  "description": "A feature to install Cabal via GHCup",
   "options": {
     "version": {
       "type": "string",
       "proposals": ["latest"],
       "default": "latest"
+    },
+    "install": {
+      "type": "string",
+      "enum": ["deferred", "default"],
+      "default": "default"
     }
   },
-  "dependsOn": {
-    "ghcr.io/esgariot/devcontainer-contrib/ghcup": {}
-  }
+  "mounts": [
+      {
+        "source": "devcontainer-feature-cache-${devcontainerId}",
+        "target": "/tmp/devcontainer_feature/cache",
+        "type": "volume"
+      }
+  ],
+  "onCreateCommand": "/usr/local/share/devcontainer_feature/cabal/install.sh",
+  "installsAfter": [
+    "ghcr.io/esgariot/devcontainer-contrib/ghcup"
+  ]
 }
