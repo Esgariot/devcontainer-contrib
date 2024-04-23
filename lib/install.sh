@@ -39,7 +39,6 @@ __step_add_user() {
   id devcontainer-feature &>/dev/null || {
     useradd -c "devcontainer-feature" -G sudo -M -r -s /sbin/nologin devcontainer-feature
     printf '%s ALL=(ALL:ALL) NOPASSWD: ALL\n' devcontainer-feature > /etc/sudoers.d/devcontainer-feature
-    printf '%s ALL=(devcontainer-feature) NOPASSWD: %s' ALL "${metadir}/install.sh" > "/etc/sudoers.d/devcontainer-feature_${pkgname}"
   }
 }
 
@@ -80,6 +79,7 @@ __step_wrapper() {
 				if [ "\$(id -u)" = "\$(id -u devcontainer-feature)" ]; then
 					:
 				else
+				  echo "re-running as user=devcontainer-feature"
 					exec sudo -u devcontainer-feature "\$0" "\$@"
 				fi
 				cd "\$(mktemp -d)"
@@ -104,6 +104,7 @@ __step_wrapper() {
 				fi
 			EOF
 			chmod 755 "${metadir}/install.sh"
+      printf '%s ALL=(devcontainer-feature) NOPASSWD: %s' ALL "${metadir}/install.sh" > "/etc/sudoers.d/devcontainer-feature_${pkgname}"
 		};;
 	esac
 }
