@@ -79,10 +79,12 @@ __step_wrapper() {
 				if [ "\$(id -u)" = "\$(id -u devcontainer-feature)" ]; then
 					:
 				else
-				  echo "re-running as user=devcontainer-feature"
+					echo "re-running as user=devcontainer-feature"
 					exec sudo -u devcontainer-feature "\$0" "\$@"
 				fi
-				cd "\$(mktemp -d)"
+				stagedir="/tmp/devcontainer_feature/stage/${pkgname}"
+				sudo install -dm0775 -o root -g devcontainer-feature "\${stagedir}"
+				cd "\${stagedir}"
 				__install() {
 					case "\${1}" in
 						install) sudo dpkg -i "${cachedir}/${base}.deb" ;;
@@ -104,7 +106,7 @@ __step_wrapper() {
 				fi
 			EOF
 			chmod 755 "${metadir}/install.sh"
-      printf '%s ALL=(devcontainer-feature) NOPASSWD: %s' ALL "${metadir}/install.sh" > "/etc/sudoers.d/devcontainer-feature_${pkgname}"
+			printf '%s ALL=(devcontainer-feature) NOPASSWD: %s' ALL "${metadir}/install.sh" > "/etc/sudoers.d/devcontainer-feature_${pkgname}"
 		};;
 	esac
 }

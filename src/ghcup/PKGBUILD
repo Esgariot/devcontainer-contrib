@@ -19,7 +19,7 @@ package() {
   install -Dm755 "x86_64-linux-${pkgname}-${pkgver}" "${pkgdir}/usr/bin/ghcup"
   _install_completion_script zsh "zsh/site-functions/_ghcup"
   _install_completion_script bash "bash-completion/completions/ghcup"
-  _install_completion_script fish fish/vendor_completions.d/ghcup.fish
+  _install_completion_script fish "fish/vendor_completions.d/ghcup.fish"
  }
 
 _install_completion_script() {

@@ -1,7 +1,7 @@
 {
   "name": "GHCup",
   "id": "ghcup",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A feature to install ghcup",
   "options": {
     "version": {
@@ -17,7 +17,7 @@
   },
   "mounts": [
       {
-        "source": "devcontainer-feature-cache-${devcontainerId}",
+        "source": "feature-cache",
         "target": "/tmp/devcontainer_feature/cache",
         "type": "volume"
       }
