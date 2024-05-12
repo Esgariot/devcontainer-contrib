@@ -66,7 +66,7 @@ __step_wrapper() {
     default) {
 			cat <<- EOF > "${metadir}/install.sh"
 				#!/usr/bin/env sh
-				echo "${pkgname} has been already installed."
+				echo "${pkgname} has been installed."
 			EOF
 			chmod 755 "${metadir}/install.sh"
 			apt-get update
@@ -85,28 +85,18 @@ __step_wrapper() {
 				stagedir="/tmp/devcontainer_feature/stage/${pkgname}"
 				sudo install -dm0775 -o root -g devcontainer-feature "\${stagedir}"
 				cd "\${stagedir}"
-				__install() {
-					case "\${1}" in
-						install) sudo dpkg -i "${cachedir}/${base}.deb" ;;
-						build) {
-							sudo apt-get update
-							install -m644 "${metadir}/PKGBUILD" PKGBUILD
-							env DEBIAN_FRONTEND=noninteractive makedeb PKGBUILD -sri --pass-env --no-confirm
-							sudo install -Dm644 "${metadir}/PKGBUILD.sha1sum" "${cachedir}/${base}.PKGBUILD.sha1sum"
-							sudo install -Dm644 "${base}.deb" "${cachedir}/${base}.deb"
-						} ;;
-					esac
-				}
-				if [ -d "${cachedir}/.." ]; then
-					if [ "\$(cat ${cachedir}/${base}.PKGBUILD.sha1sum >/dev/null 2>/dev/null)" = "$(cat PKGBUILD.sha1sum)" ]; then
-						__install install
-					else
-						__install build
-					fi
+				if [ "\$(cat ${cachedir}/${base}.PKGBUILD.sha1sum >/dev/null 2>/dev/null)" = "$(cat PKGBUILD.sha1sum)" ]; then
+					sudo dpkg -i "${cachedir}/${base}.deb" 
+				else
+					sudo apt-get update
+					install -m644 "${metadir}/PKGBUILD" PKGBUILD
+					env DEBIAN_FRONTEND=noninteractive makedeb PKGBUILD -sri --pass-env --no-confirm
+					sudo install -Dm644 "${metadir}/PKGBUILD.sha1sum" "${cachedir}/${base}.PKGBUILD.sha1sum"
+					sudo install -Dm644 "${base}.deb" "${cachedir}/${base}.deb"
 				fi
 			EOF
 			chmod 755 "${metadir}/install.sh"
-			printf '%s ALL=(devcontainer-feature) NOPASSWD: %s' ALL "${metadir}/install.sh" > "/etc/sudoers.d/devcontainer-feature_${pkgname}"
+			install -Dm0440 <(printf '%s ALL=(devcontainer-feature) NOPASSWD: %s\n' ALL "${metadir}/install.sh") "/etc/sudoers.d/devcontainer-feature_${pkgname}"
 		};;
 	esac
 }
