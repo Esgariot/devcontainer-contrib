@@ -25,7 +25,7 @@ jobs:
         with:
           filters: |
             feature_paths:
-              - 'src/${{ matrix.features }}'
+              - 'src/${{ matrix.features }}/**'
   validate:
     needs: 
       - data-features

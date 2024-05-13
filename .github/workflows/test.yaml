@@ -28,8 +28,8 @@ jobs:
         with:
           filters: |
             feature_paths:
-              - 'src/${{ matrix.features }}'
-              - 'test/${{ matrix.features }}'
+              - 'src/${{ matrix.features }}/**'
+              - 'test/${{ matrix.features }}/**'
 
   test-scenarios:
     needs: 
