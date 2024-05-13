@@ -17,7 +17,11 @@ jobs:
         run: |
           echo "scenarios=$(make ci-test-targets)" >> $GITHUB_OUTPUT
   filter-changes:
+    needs:
+      - data-scenarios
     runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.data-scenarios.outputs.scenarios) }}
     permissions:
       pull-requests: read
     outputs:
