@@ -85,9 +85,11 @@ __step_wrapper() {
 				stagedir="/tmp/devcontainer_feature/stage/${pkgname}"
 				sudo install -dm0775 -o root -g devcontainer-feature "\${stagedir}"
 				cd "\${stagedir}"
-				if [ "\$(cat ${cachedir}/${base}.PKGBUILD.sha1sum >/dev/null 2>/dev/null)" = "$(cat PKGBUILD.sha1sum)" ]; then
+				if [ "\$(cat ${cachedir}/${base}.PKGBUILD.sha1sum 2>/dev/null)" = "$(cat PKGBUILD.sha1sum)" ]; then
+				  echo "Found matching deb package in cache. Installing..."
 					sudo dpkg -i "${cachedir}/${base}.deb" 
 				else
+				  echo "Installing..."
 					sudo apt-get update
 					install -m644 "${metadir}/PKGBUILD" PKGBUILD
 					env DEBIAN_FRONTEND=noninteractive makedeb PKGBUILD -sri --pass-env --no-confirm
