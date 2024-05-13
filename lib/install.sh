@@ -62,7 +62,7 @@ __step_env() {
 __step_wrapper() {
   local base="${pkgname}_${pkgver}-${pkgrel}_amd64"
 
-  case "${INSTALL:-"default"}" in  
+  case "${INSTALL:-"default"}" in
     default) {
 			cat <<- EOF > "${metadir}/install.sh"
 				#!/usr/bin/env sh
@@ -86,10 +86,10 @@ __step_wrapper() {
 				sudo install -dm0775 -o root -g devcontainer-feature "\${stagedir}"
 				cd "\${stagedir}"
 				if [ "\$(cat ${cachedir}/${base}.PKGBUILD.sha1sum 2>/dev/null)" = "$(cat PKGBUILD.sha1sum)" ]; then
-				  echo "Found matching deb package in cache. Installing..."
-					sudo dpkg -i "${cachedir}/${base}.deb" 
+					echo "Found matching deb package in cache. Installing..."
+					sudo dpkg -i "${cachedir}/${base}.deb"
 				else
-				  echo "Installing..."
+					echo "Installing..."
 					sudo apt-get update
 					install -m644 "${metadir}/PKGBUILD" PKGBUILD
 					env DEBIAN_FRONTEND=noninteractive makedeb PKGBUILD -sri --pass-env --no-confirm
