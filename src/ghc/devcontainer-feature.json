@@ -11,7 +11,8 @@
     },
     "bindist": {
      "description": "url pointing to binary distribution, parsed as `ghcup --url $BINDIST`",
-      "type": "string"
+      "type": "string",
+      "default": ""
     },
     "install": {
       "type": "string",
