@@ -16,8 +16,7 @@ apt-get install -qq sudo curl
 command -v makedeb || {
   makedebtmp="$(mktemp -d)"
   curl -sfL -o "${makedebtmp}/makedeb.deb" "https://github.com/makedeb/makedeb/releases/download/v${MAKEDEB_VERSION}/makedeb-beta_${MAKEDEB_VERSION}_amd64_${UBUNTU_FLAVOR}.deb"
-  dpkg -i "${makedebtmp}/makedeb.deb"
-  
+  apt-get -f -qq install "${makedebtmp}/makedeb.deb"
 }
 
 # create user that will install the features
