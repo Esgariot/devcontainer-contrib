@@ -4,10 +4,24 @@ on:
   pull_request:
 
 jobs:
-  validate:
+  data-features:
     runs-on: ubuntu-latest
+    outputs:
+      features: ${{ steps.data.outputs.features }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - id: data
+        run: |
+          echo "features=$(make ci-features-paths)" >> $GITHUB_OUTPUT
+  validate:
+    needs: data-features
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.data-features.outputs.features) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: ${{ matrix.features }}
 
       - name: "Validate devcontainer-feature.json files"
         uses: devcontainers/action@v1
