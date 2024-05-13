@@ -4,10 +4,10 @@ pkgver="${VERSION}"
 pkgrel=1
 arch=(amd64)
 url="https://github.com/haskell/${pkgname}-hs"
-_buildenv=(BINDIST VERSION)
+_buildenv=(BINDIST)
 
 pkgver() {
-  command -v ghcup 2>/dev/null || { echo "ghcup not found"; exit 1; }
+  command -v ghcup &>/dev/null || { echo "ghcup not found"; exit 1; }
   case "${VERSION:-"latest"}" in
     "latest") : "$(ghcup list -t ghc -r 2>/dev/null | cut -d' ' -f 2 | tail -1)" ;;
     *) : "${VERSION}" ;;
