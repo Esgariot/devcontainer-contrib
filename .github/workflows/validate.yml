@@ -13,8 +13,24 @@ jobs:
       - id: data
         run: |
           echo "features=$(make ci-features-paths)" >> $GITHUB_OUTPUT
+  filter-changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      feature-paths: ${{ steps.filter.outputs.feature_paths }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            feature_paths:
+              - 'src/${{ matrix.features }}'
   validate:
-    needs: data-features
+    needs: 
+      - data-features
+      - filter-changes
+    if: ${{ needs.filter-changes.outputs.feature-paths == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.data-features.outputs.features) }}
