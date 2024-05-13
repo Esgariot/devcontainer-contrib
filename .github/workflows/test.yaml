@@ -21,7 +21,7 @@ jobs:
     needs: data-scenarios
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.data-scenarios.outpts.scenarios) }}
+      matrix: ${{ fromJson(needs.data-scenarios.outputs.scenarios) }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v3
