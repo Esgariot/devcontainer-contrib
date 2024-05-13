@@ -37,7 +37,15 @@ cd "${metadir}"
 
 # fill out correct pkgver in PKGBUILD. Update locally too.
 pkgver="$(pkgver)"
-sed -i "$(mktemp)" -e '1 s/^\s*pkgver=.*/pkgver="'"${pkgver}"'"/; t' -e '1,// s//pkgver="'"${pkgver}"'"/' "${metadir}/PKGBUILD" 
+sed -i "$(mktemp)" -e '1 s/^\s*pkgver=.*/pkgver="'"${pkgver}"'"/; t' -e '1,// s//pkgver="'"${pkgver}"'"/' "${metadir}/PKGBUILD"
+
+# NOTE: shadow pkgver() so makedeb doesn't treat it as devel package (buggy)
+cat <<- EOF >> "${metadir}/PKGBUILD"
+
+pkgver() {
+	echo "\${pkgver}"
+}
+EOF
 
 if [[ ${_buildenv:-} ]]; then
   for e in "${_buildenv[@]}"; do
