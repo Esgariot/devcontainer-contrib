@@ -1,7 +1,7 @@
 {
   "name": "Cabal",
   "id": "cabal",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "A feature to install Cabal via GHCup",
   "options": {
     "version": {
@@ -17,7 +17,7 @@
   },
   "mounts": [
       {
-        "source": "devcontainer-feature-cache-${devcontainerId}",
+        "source": "feature-cache",
         "target": "/tmp/devcontainer_feature/cache",
         "type": "volume"
       }

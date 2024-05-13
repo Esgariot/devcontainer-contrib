@@ -1,7 +1,7 @@
 pkgname="haskell-language-server"
 pkgdesc="Haskell Language Server"
-pkgver="2.7.0.0"
-pkgrel="2"
+pkgver="${VERSION}"
+pkgrel="1"
 arch=(amd64)
 url="https://github.com/haskell/${pkgname}"
 makedepends=(libicu-dev libncurses-dev libgmp-dev zlib1g-dev patchelf)
@@ -15,12 +15,12 @@ pkgver() {
 }
 
 build() {
-    local ghc_ver="ghc-$(ghc --numeric-version)"
-    GHCUP_INSTALL_BASE_PREFIX="${srcdir}" CABAL_DIR="${srcdir}" ghcup compile hls --no-set --cabal-update --version "${pkgver}" --ghc "${ghc_ver}" --isolate "${srcdir}/isolate_dir"
+    _ghc_ver="ghc-$(ghc --numeric-version)"
+    GHCUP_INSTALL_BASE_PREFIX="${srcdir}" CABAL_DIR="${srcdir}" ghcup compile hls --no-set --cabal-update --version "${pkgver}" --ghc "${_ghc_ver}" --isolate "${srcdir}/isolate_dir"
 }
 
 package() {
-    find "${srcdir}/isolate_dir" -execdir install -Dm 755 "{}" "${pkgdir}/usr/bin"
-    find "${cabal_dir}/store/${ghc_ver}" -type f -name "*.so" -execdir install -Dm 644 "{}" "${pkgdir}/usr/lib/${ghc_ver}/lib/${pkgname}-${pkgver}/{}" \;
-    patchelf --set-rpath "\$ORIGIN/../lib/${ghc_ver}/lib/x86_64-linux-${ghc_ver}:\$ORIGIN/../lib/${ghc_ver}/lib/${pkgname}-${pkgver}" "${pkgdir}/usr/bin/${pkgname}-$(ghc --numeric-version)"
+    find "${srcdir}/isolate_dir" -execdir install -Dm 755 "{}" "${pkgdir}/usr/bin/{}" \;
+    find "${srcdir}/store/${_ghc_ver}" -type f -name "*.so" -execdir install -Dm 644 "{}" "${pkgdir}/usr/lib/${_ghc_ver}/lib/${pkgname}-${pkgver}/{}" \;
+    patchelf --set-rpath "\$ORIGIN/../lib/${_ghc_ver}/lib/x86_64-linux-${_ghc_ver}:\$ORIGIN/../lib/${_ghc_ver}/lib/${pkgname}-${pkgver}" "${pkgdir}/usr/bin/${pkgname}-$(ghc --numeric-version)"
 }

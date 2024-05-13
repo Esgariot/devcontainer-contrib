@@ -6,6 +6,15 @@ arch=(amd64)
 url="https://github.com/haskell/${pkgname}-hs"
 _buildenv=(BINDIST VERSION)
 
+pkgver() {
+  command -v ghcup 2>/dev/null || { echo "ghcup not found"; exit 1; }
+  case "${VERSION:-"latest"}" in
+    "latest") : "$(ghcup list -t ghc -r 2>/dev/null | cut -d' ' -f 2 | tail -1)" ;;
+    *) : "${VERSION}" ;;
+  esac
+  echo "$_"
+}
+
 package() {
   local option_bindist=()
   [[ "${BINDIST:-}" ]] && option_bindist+=("--url" "${BINDIST}")

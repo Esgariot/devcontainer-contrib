@@ -17,7 +17,7 @@
   },
   "mounts": [
     {
-      "source": "devcontainer-feature-cache-${devcontainerId}",
+      "source": "feature-cache",
       "target": "/tmp/devcontainer_feature/cache",
       "type": "volume"
     }

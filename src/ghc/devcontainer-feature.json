@@ -6,6 +6,7 @@
   "options": {
     "version": {
       "type": "string"
+      
     },
     "bindist": {
      "description": "url pointing to binary distribution, parsed as `ghcup --url $BINDIST`",
@@ -19,7 +20,7 @@
   },
   "mounts": [
     {
-      "source": "devcontainer-feature-cache-${devcontainerId}",
+      "source": "feature-cache",
       "target": "/tmp/devcontainer_feature/cache",
       "type": "volume"
     }
