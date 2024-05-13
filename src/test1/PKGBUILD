@@ -4,6 +4,10 @@ pkgver="1"
 pkgrel=1
 arch=(amd64)
 
+pkgver() {
+  echo "1"
+}
+
 prepare() {
   if [ -e "/usr/share/test1" ]; then
     echo "test1 already exists there"
