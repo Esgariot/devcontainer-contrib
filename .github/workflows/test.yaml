@@ -16,9 +16,26 @@ jobs:
       - id: data
         run: |
           echo "scenarios=$(make ci-test-targets)" >> $GITHUB_OUTPUT
+  filter-changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      feature-paths: ${{ steps.filter.outputs.feature_paths }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            feature_paths:
+              - 'src/${{ matrix.features }}'
+              - 'test/${{ matrix.features }}'
 
   test-scenarios:
-    needs: data-scenarios
+    needs: 
+      - data-scenarios
+      - filter-changes
+    if: ${{ needs.filter-changes.outputs.feature-paths == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.data-scenarios.outputs.scenarios) }}
