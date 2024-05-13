@@ -1,0 +1,32 @@
+pkgname="gitui"
+pkgdesc="git UI"
+pkgver="0.26.1"
+pkgrel=1
+arch=("amd64")
+url="https://github.com/extrawurst/${pkgname}"
+source=("${url}/archive/v${pkgver}.tar.gz")
+
+pkgver() {
+    case "${VERSION:-"latest"}" in
+        "latest") : "$(curl -Ls -o /dev/null -w %{url_effective} "${url}/releases/latest" | awk -F'/' '{print substr($NF,2)}')" ;;
+        *)        : "${VERSION}" ;;
+    esac
+    echo "$_"
+}
+
+prepare() {
+    source "/usr/local/cargo/env"
+    chown -R $USER .
+}
+
+build() {
+    cd "${pkgname}-${pkgver}"
+    CARGO_HOME="${srcdir}" RUSTUP_HOME="${srcdir}" LIBGIT_SYS_USE_PKG_CONFIG=1 cargo build --locked --release
+}
+
+package() {
+    cd "${pkgname}-${pkgver}"
+    install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/${pkgname}"
+    install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname" {KEY_CONFIG,README,THEMES}.md
+    install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.md
+}

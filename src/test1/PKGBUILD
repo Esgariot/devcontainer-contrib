@@ -1,0 +1,26 @@
+pkgname="test1"
+pkgdesc="Test feature #1"
+pkgver="1"
+pkgrel=1
+arch=(amd64)
+
+pkgver() {
+  echo "1"
+}
+
+prepare() {
+  if [ -e "/usr/share/test1" ]; then
+    echo "test1 already exists there"
+    exit 1
+  fi
+}
+
+build() {
+  echo "running build of ${pkgname}"
+}
+
+package() {
+  install -Dm755 <(echo "test1") "${pkgdir}/usr/share/test1"
+  echo "running package of ${pkgname}"
+}
+

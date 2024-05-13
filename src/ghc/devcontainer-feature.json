@@ -1,15 +1,18 @@
 {
   "name": "GHC",
   "id": "ghc",
-  "version": "2.0.1",
+  "version": "3.0.1",
   "description": "A feature to install GHC via ghcup",
   "options": {
     "version": {
-      "type": "string"
+      "type": "string",
+      "proposals": ["latest"],
+      "default": "latest"
     },
     "bindist": {
      "description": "url pointing to binary distribution, parsed as `ghcup --url $BINDIST`",
-      "type": "string"
+      "type": "string",
+      "default": ""
     },
     "install": {
       "type": "string",
@@ -19,13 +22,13 @@
   },
   "mounts": [
     {
-      "source": "devcontainer-feature-cache-${devcontainerId}",
+      "source": "feature-cache",
       "target": "/tmp/devcontainer_feature/cache",
       "type": "volume"
     }
   ],
   "onCreateCommand": "/usr/local/share/devcontainer_feature/ghc/install.sh",
   "installsAfter": [
-    "ghcr.io/esgariot/devcontainer-contrib/ghcup"
+    "ghcr.io/esgariot/devcontainer-contrib/ghcup:2"
   ]
 }

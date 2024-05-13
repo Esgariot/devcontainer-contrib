@@ -1,0 +1,23 @@
+{
+  "name": "test1",
+  "id": "test1",
+  "version": "1.0.0",
+  "description": "Test feature #1",
+  "options": {
+    "install": {
+      "type": "string",
+      "enum": ["deferred", "default"],
+      "default": "default"
+    }
+  },
+  "mounts": [
+    {
+      "source": "feature-cache",
+      "target": "/tmp/devcontainer_feature/cache",
+      "type": "volume"
+    }
+  ],
+  "onCreateCommand": "/usr/local/share/devcontainer_feature/test1/install.sh",
+  "installsAfter": [
+  ]
+}

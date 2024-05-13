@@ -1,11 +1,14 @@
 {
 	"default": {
-		"image": "mcr.microsoft.com/devcontainers/base:focal",
+		"image": "mcr.microsoft.com/devcontainers/base:jammy",
 		"features": {
-			"ghcup": {},
-			"cabal": {},
-			"ghc": {
+			"ghcr.io/esgariot/devcontainer-contrib/ghcup:2": {},
+			"ghcr.io/esgariot/devcontainer-contrib/cabal:2": {},
+			"ghcr.io/esgariot/devcontainer-contrib/ghc:2": {
 				"version": "9.6.4"
+			},
+			"haskell-language-server": {
+				"install": "deferred"
 			}
 		}
 	}

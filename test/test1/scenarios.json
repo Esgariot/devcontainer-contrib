@@ -2,8 +2,7 @@
 	"install=default": {
 		"image": "mcr.microsoft.com/devcontainers/base:jammy",
 		"features": {
-			"ghcr.io/esgariot/devcontainer-contrib/ghcup:2": {},
-			"ghc": {
+			"test1": {
 				"install": "default"
 			}
 		}
@@ -11,8 +10,7 @@
 	"install=deferred": {
 		"image": "mcr.microsoft.com/devcontainers/base:jammy",
 		"features": {
-			"ghcr.io/esgariot/devcontainer-contrib/ghcup:2": {},
-			"ghc": {
+			"test1": {
 				"install": "deferred"
 			}
 		}
