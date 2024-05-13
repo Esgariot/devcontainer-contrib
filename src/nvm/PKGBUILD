@@ -1,19 +1,17 @@
 pkgname="nvm"
-pkgver="0.39.7"
+pkgdesc="Node Version Manager"
+pkgver="${VERSION}"
+pkgrel=1
+arch=(amd64)
 url="https://github.com/nvm-sh/nvm"
 source=("${url}/archive/v${pkgver}.tar.gz")
-depends=(build-essential curl)
-
+sha256sums=('dc514465f99541304380f06b602d6e2a8f3f63584f7321d76f39a10c279c5ed7')
 pkgver() {
   case "${VERSION:-"latest"}" in
     "latest") :  "$(curl -Ls -o /dev/null/ -w %{url_effective} "${url}/releases/latest" | awk -F'/' '{print substr($NF,2)}')" ;;
     *) : "${VERSION}" ;;
   esac
   echo "$_"
-}
-
-prepare() {
-  tar -xzf "v${pkgver}.tar.gz"
 }
 
 package() {

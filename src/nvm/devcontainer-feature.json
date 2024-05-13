@@ -1,13 +1,26 @@
 {
   "name": "nvm",
   "id": "nvm",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A feature to install nvm.sh",
   "options": {
     "version": {
       "type": "string",
       "proposals": ["latest"],
       "default": "latest"
+    },
+    "install": {
+      "type": "string",
+      "enum": ["deferred","default"],
+      "default":"default"
     }
-  
+  },
+ "mounts": [
+      {
+        "source": "feature-cache",
+        "target": "/tmp/devcontainer_feature/cache",
+        "type": "volume"
+      }
+  ],
+  "onCreateCommand": "/usr/local/share/devcontainer_feature/nvm/install.sh"
 }
