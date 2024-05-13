@@ -1,9 +1,19 @@
 {
-	"default": {
-		"image": "mcr.microsoft.com/devcontainers/base:focal",
+	"install=default": {
+		"image": "mcr.microsoft.com/devcontainers/base:jammy",
 		"features": {
+			"ghcr.io/esgariot/devcontainer-contrib/ghcup:2": {},
 			"ghc": {
-				"version": "9.6.4"
+				"install": "default"
+			}
+		}
+	},
+	"install=deferred": {
+		"image": "mcr.microsoft.com/devcontainers/base:jammy",
+		"features": {
+			"ghcr.io/esgariot/devcontainer-contrib/ghcup:2": {},
+			"ghc": {
+				"install": "deferred"
 			}
 		}
 	}

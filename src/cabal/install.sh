@@ -16,8 +16,7 @@ apt-get install -qq sudo curl
 command -v makedeb || {
   makedebtmp="$(mktemp -d)"
   curl -sfL -o "${makedebtmp}/makedeb.deb" "https://github.com/makedeb/makedeb/releases/download/v${MAKEDEB_VERSION}/makedeb-beta_${MAKEDEB_VERSION}_amd64_${UBUNTU_FLAVOR}.deb"
-  dpkg -i "${makedebtmp}/makedeb.deb"
-  
+  apt-get -f -qq install "${makedebtmp}/makedeb.deb"
 }
 
 # create user that will install the features
@@ -38,7 +37,15 @@ cd "${metadir}"
 
 # fill out correct pkgver in PKGBUILD. Update locally too.
 pkgver="$(pkgver)"
-sed -i "$(mktemp)" -e '1 s/^\s*pkgver=.*/pkgver="'"${pkgver}"'"/; t' -e '1,// s//pkgver="'"${pkgver}"'"/' "${metadir}/PKGBUILD" 
+sed -i "$(mktemp)" -e '1 s/^\s*pkgver=.*/pkgver="'"${pkgver}"'"/; t' -e '1,// s//pkgver="'"${pkgver}"'"/' "${metadir}/PKGBUILD"
+
+# NOTE: shadow pkgver() so makedeb doesn't treat it as devel package (buggy)
+cat <<- EOF >> "${metadir}/PKGBUILD"
+
+pkgver() {
+	echo "\${pkgver}"
+}
+EOF
 
 if [[ ${_buildenv:-} ]]; then
   for e in "${_buildenv[@]}"; do
