@@ -17,29 +17,24 @@ jobs:
       - id: data
         run: |
           echo ${{ steps.changes.outputs.changes }}
-          echo "scenarios=$(make ci-features-pathspecs)" >> $GITHUB_OUTPUT
-
-  changed-only:
-    runs-on: ubuntu-latest
-    needs:
-      - data-scenarios
-    outputs:
-      scenarios: ${{ steps.data.outputs.changes }}
-    steps:
-      - uses: dorny/paths-filter@v3
-        id: data
-        with:
-          filters: ${{ fromJson(needs.data-scenarios.outputs.scenarios) }}
+          echo "scenarios=$(make ci-test-targets)" >> $GITHUB_OUTPUT
 
   test-scenarios:
     needs: 
-      - changed-only
+      - data-scenarios
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ needs.changed-only.outputs.scenarios }}
+      matrix: ${{ fromJson(needs.data-scenarios.outputs.scenarios) }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changed:
+              - 'src/${{ matrix.features }}/**'
+              - 'test/${{ matrix.features }}/**'
 
       - name: "Install latest devcontainer CLI"
         run: npm install -g @devcontainers/cli
@@ -52,6 +47,7 @@ jobs:
           password: ${{ secrets.GHCR_PAT }}
 
       - name: "Test features scenarios"
+        if: steps.filter.outputs.changed == 'true'
         run: make feature=${{ matrix.features }} test
 
 

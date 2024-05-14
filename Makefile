@@ -12,10 +12,10 @@ test: $(wildcard test/$(feature)/scenarios.json)
 ci-test-targets: $(wildcard test/$(feature)/scenarios.json)
 	@echo $(patsubst test/%/scenarios.json,%,$^) | jq -Rc 'split(" ")  | {"features": .}'
 
-.PHONY: ci-features-pathspecs
-ci-features-pathspecs: $(wildcard src/$(feature))
-	@echo $(patsubst src/%,%,$^) | jq -Rc 'split(" ") | map({(.): [ "src/" + . + "/**", ("test/" + . + "/**")]}) | add | {"features": .}'
-	
+.PHONY: ci-features-paths
+ci-features-paths: $(wildcard src/$(feature))
+	@echo $^ | jq -Rc 'split(" ") | {"features": .}'
+
 test_cmdline?=""
 .PHONY: gen-test
 gen-test:
