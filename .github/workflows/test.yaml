@@ -7,25 +7,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  data-scenarios:
-    runs-on: ubuntu-latest
-    outputs:
-      scenarios: ${{ steps.data.outputs.scenarios }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: data
-        run: |
-          echo "scenarios=$(make ci-test-targets)" >> $GITHUB_OUTPUT
+
   filter-changes:
     needs:
       - data-scenarios
     runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJson(needs.data-scenarios.outputs.scenarios) }}
     permissions:
       pull-requests: read
     outputs:
-      feature-paths: ${{ steps.filter.outputs.feature_paths }}
+      feature-paths: ${{ steps.filter.outputs.changes }}
     steps:
       - uses: dorny/paths-filter@v3
         id: filter
@@ -35,11 +25,23 @@ jobs:
               - 'src/${{ matrix.features }}/**'
               - 'test/${{ matrix.features }}/**'
 
+  data-scenarios:
+    needs:
+      - filter-changes
+    runs-on: ubuntu-latest
+    outputs:
+      scenarios: ${{ steps.data.outputs.scenarios }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: data
+        run: |
+          echo ${{ needs.filter-changes.outputs.feature-paths }}
+          echo "scenarios=$(make ci-test-targets)" >> $GITHUB_OUTPUT
+
+
   test-scenarios:
     needs: 
       - data-scenarios
-      - filter-changes
-    if: ${{ needs.filter-changes.outputs.feature-paths == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.data-scenarios.outputs.scenarios) }}
