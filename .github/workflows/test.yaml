@@ -8,21 +8,6 @@ on:
 
 jobs:
 
-  filter-changes:
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-    outputs:
-      feature-paths: ${{ steps.filter.outputs.changes }}
-    steps:
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            feature_paths:
-              - 'src/${{ matrix.features }}/**'
-              - 'test/${{ matrix.features }}/**'
-
   data-scenarios:
     needs:
       - filter-changes
@@ -30,10 +15,17 @@ jobs:
     outputs:
       scenarios: ${{ steps.data.outputs.scenarios }}
     steps:
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            feature_paths:
+              - 'src/${{ matrix.features }}/**'
+              - 'test/${{ matrix.features }}/**'
       - uses: actions/checkout@v4
       - id: data
         run: |
-          echo ${{ needs.filter-changes.outputs.feature-paths }}
+          echo ${{ steps.changes.outputs.changes }}
           echo "scenarios=$(make ci-test-targets)" >> $GITHUB_OUTPUT
 
 
