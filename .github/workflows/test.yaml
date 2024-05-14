@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  data-scenarios:
+  setup:
     runs-on: ubuntu-latest
     outputs:
       scenarios: ${{ steps.data.outputs.scenarios }}
@@ -19,12 +19,12 @@ jobs:
           echo ${{ steps.changes.outputs.changes }}
           echo "scenarios=$(make ci-test-targets)" >> $GITHUB_OUTPUT
 
-  test-scenarios:
+  test:
     needs: 
-      - data-scenarios
+      - setup
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.data-scenarios.outputs.scenarios) }}
+      matrix: ${{ fromJson(needs.setup.outputs.scenarios) }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
