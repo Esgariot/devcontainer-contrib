@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  data-features:
+  setup:
     runs-on: ubuntu-latest
     outputs:
       features: ${{ steps.data.outputs.features }}
@@ -14,17 +14,25 @@ jobs:
         run: |
           echo "features=$(make ci-features-paths)" >> $GITHUB_OUTPUT
   validate:
-    needs: data-features
+    needs: 
+      - setup
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.data-features.outputs.features) }}
+      matrix: ${{ fromJson(needs.setup.outputs.features) }}
     steps:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: ${{ matrix.features }}
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changed:
+              - '${{ matrix.features }}/devcontainer-feature.json'
 
       - name: "Validate devcontainer-feature.json files"
         uses: devcontainers/action@v1
+        if: steps.filter.outputs.changed == 'true'
         with:
           validate-only: "true"
           base-path-to-features: "./src"
