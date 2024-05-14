@@ -1,9 +1,22 @@
 {
-	"default": {
-		"image": "mcr.microsoft.com/devcontainers/base:focal",
-		"features": {
-			"ghcr.io/devcontainers/features/rust:1": {},
-			"helix":{}
-		}
-	}
+  "install=default": {
+    "image": "mcr.microsoft.com/devcontainers/base:jammy",
+    "features": {
+      "ghcr.io/devcontainers/features/rust:latest":{},
+      "ghcr.io/devcontainers/features/git:latest":{},
+      "helix": {
+        "install": "default"
+      }
+    }
+  },
+  "install=deferred": {
+    "image": "mcr.microsoft.com/devcontainers/base:jammy",
+    "features": {
+      "ghcr.io/devcontainers/features/rust:latest":{},
+      "ghcr.io/devcontainers/features/git:latest":{},
+      "helix": {
+        "install": "deferred"
+      }
+    }
+  }
 }
