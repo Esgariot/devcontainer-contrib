@@ -17,7 +17,7 @@ jobs:
       - id: data
         run: |
           echo ${{ steps.changes.outputs.changes }}
-          echo "scenarios=$(make ci-test-targets)" >> $GITHUB_OUTPUT
+          echo "scenarios=$(make ci-features-pathspecs)" >> $GITHUB_OUTPUT
 
   changed-only:
     runs-on: ubuntu-latest
@@ -25,23 +25,18 @@ jobs:
       - data-scenarios
     outputs:
       scenarios: ${{ steps.data.outputs.changes }}
-    strategy:
-      matrix: ${{ fromJson(needs.data-scenarios.outputs.scenarios) }}
     steps:
       - uses: dorny/paths-filter@v3
         id: data
         with:
-          filters: |
-            ${{ matrix.features }}:
-              - 'src/${{ matrix.features }}/**'
-              - 'test/${{ matrix.features }}/**'
+          filters: ${{ fromJson(needs.data-scenarios.outputs.scenarios) }}
 
   test-scenarios:
     needs: 
       - changed-only
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.changed-only.outputs.changes) }}
+      matrix: ${{ needs.changed-only.outputs.scenarios }}
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
