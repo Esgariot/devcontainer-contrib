@@ -1,114 +1,99 @@
 #!/usr/bin/env -S bash -i
 
 set -Eeuo pipefail
+set -x
+
+MAKEDEB_VERSION="16.1.0-beta1"
+UBUNTU_FLAVOR="$(grep -oP 'UBUNTU_CODENAME=\K\w+' /etc/os-release)"
 export DEBIAN_FRONTEND=noninteractive
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
 
-script_dir=$(cd "$(dirname "${0}")" &>/dev/null && pwd -P)
+# install dependencies
+apt-get update -qq
+apt-get install -qq sudo curl
 
-global_depends=(
-  curl
-  build-essential
-  git
-)
-
-nl() { "${__install_nanolayer_cmd}" "$@"; }
-
-__step_install_nanolayer() {
-  . "${script_dir}/library_scripts.sh"
-  ensure_nanolayer __install_nanolayer_cmd "${nlver:-"v0.4.45"}"
+# install makedeb dependency
+command -v makedeb || {
+  makedebtmp="$(mktemp -d)"
+  curl -sfL -o "${makedebtmp}/makedeb.deb" "https://github.com/makedeb/makedeb/releases/download/v${MAKEDEB_VERSION}/makedeb-beta_${MAKEDEB_VERSION}_amd64_${UBUNTU_FLAVOR}.deb"
+  apt-get -f -qq install "${makedebtmp}/makedeb.deb"
 }
 
-__step_install_dirs(){
-  srcdir="/tmp/devcontainer_feature/srcdir/${pkgname}"
-  pkgdir="/tmp/devcontainer_feature/pkgdir/${pkgname}"
-  rm -rf "${srcdir}" "${pkgdir}" || :
-  mkdir -p "${srcdir}" && cd "${srcdir}"
-  mkdir -p "${pkgdir}"
+# create user that will install the features
+id devcontainer-feature &>/dev/null || {
+  useradd -c "devcontainer-feature" -G sudo -M -r -s /sbin/nologin devcontainer-feature
+  printf '%s ALL=(ALL:ALL) NOPASSWD: ALL\n' devcontainer-feature > /etc/sudoers.d/devcontainer-feature
 }
 
-__step_install_depends(){
-  [[ "${depends:-}" ]] || depends=()
-  depends+=("${global_depends[@]}")
-  local missing_depends=()
-  join_by() { local IFS="$1"; shift; echo "$*"; }
-  for d in "${depends[@]}"; do
-    local status
-    status="$(dpkg-query -W --showformat='${db:Status-Status}' "$d" 2>&1)" && \
-    [ "${status:-}" = installed ] || \
-    missing_depends+=("${d}")
+# source PKGBUILD and set up variables and dirs for install locations
+. "${script_dir}/PKGBUILD"
+metadir="/usr/local/share/devcontainer_feature/${pkgname}"
+cachedir="/tmp/devcontainer_feature/cache/${pkgname}"
+
+install -d -m 0775 -o root -g devcontainer-feature "${metadir}"
+install -d -m 0775 -o root -g devcontainer-feature "${cachedir}"
+install -D -t "${metadir}" "${script_dir}/PKGBUILD"
+cd "${metadir}"
+
+# fill out correct pkgver in PKGBUILD. Update locally too.
+pkgver="$(pkgver)"
+sed -i "$(mktemp)" -e '1 s/^\s*pkgver=.*/pkgver="'"${pkgver}"'"/; t' -e '1,// s//pkgver="'"${pkgver}"'"/' "${metadir}/PKGBUILD"
+
+# NOTE: shadow pkgver() so makedeb doesn't treat it as devel package (buggy)
+cat <<- EOF >> "${metadir}/PKGBUILD"
+
+pkgver() {
+	echo "\${pkgver}"
+}
+EOF
+
+if [[ ${_buildenv:-} ]]; then
+  for e in "${_buildenv[@]}"; do
+    [[ "${!e:-}" ]] || continue
+    sed -i -e "1s;^;${e}=${!e}\n;" "${metadir}/PKGBUILD"
   done
-  nl install apt-get "$(join_by , "${missing_depends[@]}")"
-}
+fi
+printf '%s\n' "$(sha1sum "PKGBUILD" | head -c 40)" > "${metadir}/PKGBUILD.sha1sum"
 
-__step_install_sources() {
-  if [[ ${source:-} ]]; then
-    for s in "${source[@]}"; do
-      [ -e "${script_dir}/${s}" ] && cp "${script_dir}/${s}" "${srcdir}/" && break
-      local _s="${s##*/}"
-      local __s="${_s%%[?#]*}"
-      curl -fsSL -o "${srcdir}/${__s}" "${s}"
-    done
-  fi
-}
+# create wrapper script
+BASE_NAME="${pkgname}_${pkgver}-${pkgrel}_amd64"
+case "${INSTALL:-"default"}" in
+  default) {
+		cat <<- EOF > "${metadir}/install.sh"
+			#!/usr/bin/env sh
+			
+			echo "${pkgname} has been installed."
+		EOF
+		chmod 755 "${metadir}/install.sh"
+		sudo -u devcontainer-feature env DEBIAN_FRONTEND=noninteractive makedeb "${metadir}/PKGBUILD" -sri --pass-env --no-confirm
+	};;
+	deferred) {
+		cat <<- EOF > "${metadir}/install.sh"
+			#!/usr/bin/env sh
+			set -eu
+			if [ "\$(id -u)" = "\$(id -u devcontainer-feature)" ]; then
+				:
+			else
+				echo "re-running as user=devcontainer-feature"
+				exec sudo -u devcontainer-feature "\$0" "\$@"
+			fi
+			stagedir="/tmp/devcontainer_feature/stage/${pkgname}"
+			sudo install -dm0775 -o root -g devcontainer-feature "\${stagedir}"
+			cd "\${stagedir}"
+			if [ "\$(cat ${cachedir}/${BASE_NAME}.PKGBUILD.sha1sum 2>/dev/null)" = "$(cat PKGBUILD.sha1sum)" ]; then
+				echo "Found matching deb package in cache. Installing..."
+				sudo dpkg -i "${cachedir}/${BASE_NAME}.deb"
+			else
+				echo "Installing..."
+				sudo apt-get update
+				install -m644 "${metadir}/PKGBUILD" PKGBUILD
+				env DEBIAN_FRONTEND=noninteractive makedeb PKGBUILD -sri --pass-env --no-confirm
+				sudo install -Dm644 "${metadir}/PKGBUILD.sha1sum" "${cachedir}/${BASE_NAME}.PKGBUILD.sha1sum"
+				sudo install -Dm644 "${BASE_NAME}.deb" "${cachedir}/${BASE_NAME}.deb"
+			fi
+		EOF
+		chmod 755 "${metadir}/install.sh"
+		install -Dm0440 <(printf '%s ALL=(devcontainer-feature) NOPASSWD: %s\n' ALL "${metadir}/install.sh") "/etc/sudoers.d/devcontainer-feature_${pkgname}"
+	};;
+esac
 
-__step_install_pkgver() {
-  local tempsuffix
-  case "$(uname -s)" in
-    Darwin) tempsuffix='' ;;
-    Linux) tempsuffix="$(mktemp)";;
-  esac
-  sed -i "${tempsuffix}" -e '1 s/^\s*pkgver=.*/pkgver="'"$(pkgver)"'"/; t' -e '1,// s//pkgver="'"$(pkgver)"'"/' "${script_dir}/devcontainer-feature.sh"
-}
-
-__step_install_prepare() {
-  cd "${srcdir}"
-  type prepare &>/dev/null || return 0
-  prepare
-}
-
-__step_install_build() {
-  ldconfig
-  cd "${srcdir}"
-  type build &>/dev/null || return 0
-  build
-}
-
-__step_install_package() {
-  cd "${srcdir}"
-  package
-}
-
-__step_install_copy() {
-  (
-    shopt -s dotglob
-    shopt -s globstar
-    export GLOBIGNORE=".:.."
-    cd "${pkgdir}"
-    for i in **/*; do
-      [ ! -d  "${i}" ] && cp -P --parents "${i}" "/"
-    done
-  )
-}
-
-install_sh() {
-  while :; do
-    case "${1-}" in
-      --pkgver) __step_install_pkgver; exit;;
-      -?*) echo "Unknown option: $1"; exit 1 ;;
-      *) break ;;
-    esac
-    shift
-  done
-}
-
-. "${script_dir}/devcontainer-feature.sh"
-install_sh "$@"
-[[ ${VERSION:-} == "latest" ]] && __step_install_pkgver
-__step_install_nanolayer
-__step_install_dirs
-__step_install_depends
-__step_install_sources
-__step_install_prepare
-__step_install_build
-__step_install_package
-__step_install_copy

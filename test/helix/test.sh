@@ -2,7 +2,6 @@
 
 source dev-container-features-test-lib
 
-check "'hx' executable is present in PATH and works" hx --version
+check "'helix' executable is present in PATH and works" helix --version
 
 reportResults
-
