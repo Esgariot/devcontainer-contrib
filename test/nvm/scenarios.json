@@ -1,0 +1,18 @@
+{
+  "install=default": {
+    "image": "mcr.microsoft.com/devcontainers/base:jammy",
+    "features": {
+      "nvm": {
+        "install": "default"
+      }
+    }
+  },
+  "install=deferred": {
+    "image": "mcr.microsoft.com/devcontainers/base:jammy",
+    "features": {
+      "nvm": {
+        "install": "deferred"
+      }
+    }
+  }
+}
