@@ -9,8 +9,6 @@ on:
 jobs:
 
   data-scenarios:
-    needs:
-      - filter-changes
     runs-on: ubuntu-latest
     outputs:
       scenarios: ${{ steps.data.outputs.scenarios }}
