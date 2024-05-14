@@ -18,8 +18,8 @@ jobs:
         with:
           filters: |
             feature_paths:
-              - 'src/${{ matrix.features }}/**'
-              - 'test/${{ matrix.features }}/**'
+              - 'src/**'
+              - 'test/**'
       - uses: actions/checkout@v4
       - id: data
         run: |
