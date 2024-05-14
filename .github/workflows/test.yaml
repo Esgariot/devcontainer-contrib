@@ -9,8 +9,6 @@ on:
 jobs:
 
   filter-changes:
-    needs:
-      - data-scenarios
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
