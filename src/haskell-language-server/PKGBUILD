@@ -1,10 +1,12 @@
+# Maintainer: Esgariot <esgariot@icloud.com>
 pkgname="haskell-language-server"
 pkgdesc="Haskell Language Server"
 pkgver="${VERSION}"
 pkgrel="1"
 arch=(amd64)
 url="https://github.com/haskell/${pkgname}"
-makedepends=(libicu-dev libncurses-dev libgmp-dev zlib1g-dev patchelf)
+depends=(zlib1g-dev libgmp-dev libicu-dev libncurses-dev)
+makedepends=(patchelf libnuma-dev libssl-dev liblzma-dev libbz2-dev libffi-dev)
 
 pkgver() {
     case "${VERSION:-"latest"}" in
