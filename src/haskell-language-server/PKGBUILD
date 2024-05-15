@@ -5,8 +5,9 @@ pkgver="${VERSION}"
 pkgrel="1"
 arch=(amd64)
 url="https://github.com/haskell/${pkgname}"
-makedepends=(patchelf)
-depends=(libnuma-dev zlib1g-dev libgmp-dev libgmp10 libssl-dev liblzma-dev libbz2-dev libffi-dev libncurses-dev libncurses5 libtinfo5)
+depends=(zlib1g-dev libgmp-dev libicu-dev libncurses-dev)
+makedepends=(patchelf libnuma-dev libssl-dev liblzma-dev libbz2-dev libffi-dev)
+
 pkgver() {
     case "${VERSION:-"latest"}" in
         "latest") : "$(curl -Ls -o /dev/null -w %{url_effective} "${url}/releases/latest" | awk -F'/' '{print $NF}')" ;;

@@ -47,6 +47,12 @@ pkgver() {
 }
 EOF
 
+# NOTE: treat makedepends as depends, they aren't correctly handled by makedeb.
+cat <<- EOF >> "${metadir}/PKGBUILD"
+
+depends+=(\${makedepends[@]})
+EOF
+
 if [[ ${_buildenv:-} ]]; then
   for e in "${_buildenv[@]}"; do
     [[ "${!e:-}" ]] || continue
