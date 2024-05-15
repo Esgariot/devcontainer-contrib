@@ -5,7 +5,9 @@
 			"ghcr.io/esgariot/devcontainer-contrib/ghcup:2": {},
 			"ghcr.io/esgariot/devcontainer-contrib/cabal:2": {},
 			"ghcr.io/esgariot/devcontainer-contrib/ghc:3": {
-				"version": "9.6.4"
+			"ghcr.io/esgariot/devcontainer-contrib/ghc:3": {
+				"version": "9.6.4",
+				"install": "deferred"
 			},
 			"haskell-language-server": {
 				"install": "deferred"
