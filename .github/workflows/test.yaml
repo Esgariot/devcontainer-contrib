@@ -81,5 +81,5 @@ jobs:
       - uses: actions/cache/save@v3
         if: steps.filter.outputs.changed == 'true'
         with:
-          key: ${{ steps.cache.outputs.cache-matched-key }}
+          key: ${{ steps.cache.outputs.cache-primary-key }}
           path: feature-cache
