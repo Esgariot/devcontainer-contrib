@@ -61,7 +61,7 @@ jobs:
       - name: "Sync action cache -> cache volume"
         if: steps.filter.outputs.changed == 'true'
         run: |
-          chmod --recursive 666 feature-cache
+          install -dm777 feature-cache
           docker cp -a feature-cache/. sync-cache:/tmp/cache
 
       - name: "Test features scenarios"
