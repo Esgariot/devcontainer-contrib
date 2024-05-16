@@ -62,6 +62,8 @@ jobs:
         if: steps.filter.outputs.changed == 'true'
         run: |
           install -dm777 feature-cache
+          echo "cache contents:"
+          ls -la -R feature-cache
           docker cp -a feature-cache/. sync-cache:/tmp/cache
 
       - name: "Test features scenarios"
@@ -70,5 +72,8 @@ jobs:
 
       - name: "Sync cache volume -> action cache"
         if: steps.filter.outputs.changed == 'true'
-        run: docker cp -a sync-cache:/tmp/cache/. feature-cache
+        run: |
+          echo "cache contents:"
+          ls -la -R feature-cache
+          docker cp -a sync-cache:/tmp/cache/. feature-cache
 
