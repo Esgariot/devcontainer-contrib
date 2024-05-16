@@ -46,6 +46,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
 
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/devcontainer_feature/cache
+          key: ${{ matrix.features }}
+
       - name: "Test features scenarios"
         if: steps.filter.outputs.changed == 'true'
         run: make feature=${{ matrix.features }} test
