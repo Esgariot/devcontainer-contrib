@@ -52,11 +52,12 @@ jobs:
         if: steps.filter.outputs.changed == 'true'
         run: docker create -v feature-cache:/tmp/cache --name sync-cache alpine
 
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v3
+        id: cache
         if: steps.filter.outputs.changed == 'true'
         with:
+          key: ${{ matrix.features }}-${{ hashFiles('src/${{ matrix.features }}/PKGBUILD', 'src/${{ matrix.features }}/devcontainer-feature.json') }}
           path: feature-cache
-          key: ${{ matrix.features }}
 
       - name: "Sync action cache -> cache volume"
         if: steps.filter.outputs.changed == 'true'
@@ -76,8 +77,9 @@ jobs:
           docker cp -a sync-cache:/tmp/cache/. feature-cache
           echo "cache contents:"
           ls -la -R feature-cache
-      - uses: actions/cache/save@v4
+
+      - uses: actions/cache/save@v3
         if: steps.filter.outputs.changed == 'true'
         with:
-          key: ${{ matrix.features }}
+          key: ${{ steps.cache.outputs.cache-matched-key }}
           path: feature-cache
