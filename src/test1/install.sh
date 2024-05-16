@@ -47,6 +47,12 @@ pkgver() {
 }
 EOF
 
+# NOTE: treat makedepends as depends, they aren't correctly handled by makedeb.
+cat <<- EOF >> "${metadir}/PKGBUILD"
+
+depends+=(\${makedepends[@]})
+EOF
+
 if [[ ${_buildenv:-} ]]; then
   for e in "${_buildenv[@]}"; do
     [[ "${!e:-}" ]] || continue
@@ -82,7 +88,7 @@ case "${INSTALL:-"default"}" in
 			cd "\${stagedir}"
 			if [ "\$(cat ${cachedir}/${BASE_NAME}.PKGBUILD.sha1sum 2>/dev/null)" = "$(cat PKGBUILD.sha1sum)" ]; then
 				echo "Found matching deb package in cache. Installing..."
-				sudo dpkg -i "${cachedir}/${BASE_NAME}.deb"
+				sudo apt-get install -qq "${cachedir}/${BASE_NAME}.deb"
 			else
 				echo "Installing..."
 				sudo apt-get update
