@@ -17,11 +17,12 @@ pkgver() {
 }
 
 build() {
-    _ghc_ver="ghc-$(ghc --numeric-version)"
+    local _ghc_ver="ghc-$(ghc --numeric-version)"
     GHCUP_INSTALL_BASE_PREFIX="${srcdir}" CABAL_DIR="${srcdir}" ghcup compile hls --no-set --cabal-update --version "${pkgver}" --ghc "${_ghc_ver}" --isolate "${srcdir}/isolate_dir"
 }
 
 package() {
+    local _ghc_ver="ghc-$(ghc --numeric-version)"
     find "${srcdir}/isolate_dir" -execdir install -Dm 755 "{}" "${pkgdir}/usr/bin/{}" \;
     find "${srcdir}/store/${_ghc_ver}" -type f -name "*.so" -execdir install -Dm 644 "{}" "${pkgdir}/usr/lib/${_ghc_ver}/lib/${pkgname}-${pkgver}/{}" \;
     patchelf --set-rpath "\$ORIGIN/../lib/${_ghc_ver}/lib/x86_64-linux-${_ghc_ver}:\$ORIGIN/../lib/${_ghc_ver}/lib/${pkgname}-${pkgver}" "${pkgdir}/usr/bin/${pkgname}-$(ghc --numeric-version)"

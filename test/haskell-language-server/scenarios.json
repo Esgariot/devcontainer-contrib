@@ -1,10 +1,9 @@
 {
-	"default": {
+	"install=deferred": {
 		"image": "mcr.microsoft.com/devcontainers/base:jammy",
 		"features": {
 			"ghcr.io/esgariot/devcontainer-contrib/ghcup:2": {},
 			"ghcr.io/esgariot/devcontainer-contrib/cabal:2": {},
-			"ghcr.io/esgariot/devcontainer-contrib/ghc:3": {
 			"ghcr.io/esgariot/devcontainer-contrib/ghc:3": {
 				"version": "9.6.4",
 				"install": "deferred"
