@@ -73,9 +73,9 @@ jobs:
       - name: "Sync cache volume -> action cache"
         if: steps.filter.outputs.changed == 'true'
         run: |
+          docker cp -a sync-cache:/tmp/cache/. feature-cache
           echo "cache contents:"
           ls -la -R feature-cache
-          docker cp -a sync-cache:/tmp/cache/. feature-cache
       - uses: actions/cache/save@v4
         if: steps.filter.outputs.changed == 'true'
         with:
