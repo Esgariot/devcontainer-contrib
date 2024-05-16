@@ -56,7 +56,7 @@ jobs:
         id: cache
         if: steps.filter.outputs.changed == 'true'
         with:
-          key: ${{ matrix.features }}-${{ hashFiles(format('src/{0}/PKGBUILD', matrix.features), format('src/{0}/devcontainer-feature.json', matrix.features)) }}
+          key: ${{ matrix.features }}
           path: feature-cache
 
       - name: "Sync action cache -> cache volume"
