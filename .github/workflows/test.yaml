@@ -79,5 +79,5 @@ jobs:
       - uses: actions/cache/save@v3
         if: steps.filter.outputs.changed == 'true'
         with:
-          key: $ {{ matrix.features }}
+          key: ${{ matrix.features }}
           path: feature-cache
