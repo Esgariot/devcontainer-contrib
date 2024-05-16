@@ -76,7 +76,7 @@ jobs:
           echo "cache contents:"
           ls -la -R feature-cache
           docker cp -a sync-cache:/tmp/cache/. feature-cache
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         if: steps.filter.outputs.changed == 'true'
         with:
           key: ${{ matrix.features }}
