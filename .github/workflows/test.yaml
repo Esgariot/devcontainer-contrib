@@ -52,7 +52,7 @@ jobs:
         if: steps.filter.outputs.changed == 'true'
         run: docker create -v feature-cache:/tmp/cache --name sync-cache alpine
 
-      - uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v4
         id: cache
         if: steps.filter.outputs.changed == 'true'
         with:
@@ -78,7 +78,7 @@ jobs:
           echo "cache contents:"
           ls -la -R feature-cache
 
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         if: steps.filter.outputs.changed == 'true'
         with:
           key: ${{ steps.cache.outputs.cache-primary-key }}
